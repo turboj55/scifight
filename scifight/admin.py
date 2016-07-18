@@ -1,15 +1,59 @@
 from django.contrib import admin
-from . import models
+from scifight import models
 
-# Register your models here.
-admin.site.register(models.Team)
-admin.site.register(models.TeamOrigin)
-admin.site.register(models.Participant)
-admin.site.register(models.Leader)
-admin.site.register(models.Jury)
-admin.site.register(models.CommonOrigin)
-admin.site.register(models.Fight)
-admin.site.register(models.FightStage)
-admin.site.register(models.Problem)
-admin.site.register(models.Room)
+admin.AdminSite.site_header = 'SciFight'
 
+
+@admin.register(models.Team)
+class TeamAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.Problem)
+class ProblemAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.Fight)
+class FightAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.FightStage)
+class AdminFightStage(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.TeamOrigin)
+class AdminTeamOrigin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.Participant)
+class AdminTeamOrigin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.Leader)
+class AdminLeader(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.Jury)
+class AdminJury(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.CommonOrigin)
+class AdminCommonOrigin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.Room)
+class AdminRoom(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.JuryPoints)
+class AdminJuryPoints(admin.ModelAdmin):
+    pass
