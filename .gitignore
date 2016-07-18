@@ -5,6 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
+*.dylib
 
 # Distribution / packaging
 .Python
@@ -51,7 +52,8 @@ coverage.xml
 
 # Django stuff:
 *.log
-local_settings.py
+settings_secret.py
+/static_files
 
 # Flask stuff:
 instance/
