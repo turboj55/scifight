@@ -119,11 +119,15 @@ class Fight(models.Model):
             raise exceptions.ValidationError({"stop_time":
                 "Fight is completed before being started"})
 
-        teams  = {self.team1, self.team2, self.team3, self.team4}
-        teams -= {None}
-        if len(teams) < 2:
+        if self.team3 is None and self.team4 is not None:
+            raise exceptions.ValidationError({"team3":
+                "Team 3 must be given when team 4 is given"})
+
+        teams = [self.team1, self.team2, self.team3, self.team4]
+        teams_uniq = set(teams) - {None}
+        if len(teams_uniq) < 2 or len(teams_uniq) + teams.count(None) != 4:
             raise exceptions.ValidationError(
-                "Participating teems are not unigue")
+                "Participating teams are not unigue")
 
     class Meta:
         unique_together = ("room", "fight_num")
@@ -138,6 +142,13 @@ class FightStage(models.Model):
     reporter    = models.ForeignKey(Participant, related_name="reporter")
     opponent    = models.ForeignKey(Participant, related_name="opponent")
     reviewer    = models.ForeignKey(Participant, related_name="reviewer", null=True, blank=True)
+
+    def clean(self):
+        guys = [self.reporter, self.opponent, self.reviewer]
+        guys_uniq = set(guys) - {None}
+        if len(guys_uniq) < 2 or len(guys_uniq) + guys.count(None) != 4:
+            raise exceptions.ValidationError(
+                "Single person is assigned for two or more roles")
 
     class Meta:
         unique_together = ("fight", "action_num")
@@ -157,6 +168,25 @@ class JuryPoints(models.Model):
     reporter_mark = models.IntegerField(null=True, blank=True)
     opponent_mark = models.IntegerField(null=True, blank=True)
     reviewer_mark = models.IntegerField(null=True, blank=True)
+
+    def clean_fields(self, exclude=None):
+        exclude_set = set()
+        if exclude is not None:
+            exclude_set = set(exclude)
+
+        if "reviewer_mark" not in exclude_set:
+            bad = (self.reviewer_mark is None and
+                   self.fight_stage.fight.team3 is not None)
+            if bad:
+                raise exceptions.ValidationError({"reviewer_mark":
+                    "Reviewer mark must be set, because there is a " +
+                    "reviewing team in this fight"})
+
+        if "jury" not in exclude_set:
+            juries_set = set(self.fight_stage.fight.juries.all())
+            if self.jury not in juries_set:
+                raise exceptions.ValidationError({"jury":
+                    "Selected jury doesn't take part in the fight"})
 
     class Meta:
         unique_together = ("fight_stage", "jury")
