@@ -63,7 +63,7 @@ class Leader(models.Model):
 class Jury(models.Model):
     short_name  = models.CharField(max_length=NAME_LENGTH)
     full_name   = models.CharField(max_length=NAME_LENGTH, blank=True)
-    origin      = models.ForeignKey(CommonOrigin)
+    origin      = models.ForeignKey(CommonOrigin, null=True, blank=True)
 
     def __str__(self):
         return self.short_name
@@ -95,7 +95,7 @@ class Fight(models.Model):
     team2       = models.ForeignKey(Team, related_name="team2")
     team3       = models.ForeignKey(Team, related_name="team3", null=True, blank=True)
     team4       = models.ForeignKey(Team, related_name="team4", null=True, blank=True)
-    juries      = models.ManyToManyField(Jury)
+    juries      = models.ManyToManyField(Jury, blank=True)
 
 
 class FightStage(models.Model):
