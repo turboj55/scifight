@@ -43,40 +43,40 @@ class FightAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.FightStage)
-class AdminFightStage(admin.ModelAdmin):
+class FightStageAdmin(admin.ModelAdmin):
     pass
 
 
 @admin.register(models.TeamOrigin)
-class AdminTeamOrigin(admin.ModelAdmin):
+class TeamOriginAdmin(admin.ModelAdmin):
     pass
 
 
 @admin.register(models.Participant)
-class AdminTeamOrigin(admin.ModelAdmin):
+class TeamOriginAdmin(admin.ModelAdmin):
     pass
 
 
 @admin.register(models.Leader)
-class AdminLeader(admin.ModelAdmin):
+class LeaderAdmin(admin.ModelAdmin):
     pass
 
 
 @admin.register(models.Jury)
-class AdminJury(admin.ModelAdmin):
+class JuryAdmin(admin.ModelAdmin):
     pass
 
 
 @admin.register(models.CommonOrigin)
-class AdminCommonOrigin(admin.ModelAdmin):
+class CommonOriginAdmin(admin.ModelAdmin):
     pass
 
 
 @admin.register(models.Room)
-class AdminRoom(admin.ModelAdmin):
+class RoomAdmin(admin.ModelAdmin):
     pass
 
 
 @admin.register(models.JuryPoints)
-class AdminJuryPoints(admin.ModelAdmin):
+class JuryPointsAdmin(admin.ModelAdmin):
     pass
