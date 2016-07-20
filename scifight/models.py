@@ -158,3 +158,14 @@ class JuryPoints(models.Model):
 
     class Meta:
         unique_together = ("fight_stage", "jury")
+
+
+class LeaderToJury(models.Model):
+    leader = models.ForeignKey(Leader)
+    jury = models.ForeignKey(Jury)
+
+    class Meta:
+        unique_together = ("leader", "jury")
+
+    def __str__(self):
+        return "{0} -> {1}".format(self.leader, self.jury)
