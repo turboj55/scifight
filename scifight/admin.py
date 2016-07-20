@@ -1,12 +1,35 @@
 from django.contrib import admin
+from django         import forms
 from scifight import models
 
 admin.AdminSite.site_header = 'SciFight'
 
 
+class ParticipantForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Participant
+        exclude = []
+        widgets = {
+            # FIXME: Magic constant!
+            'grade': forms.TextInput(attrs={'size': 5}),
+        }
+
+
+class ParticipantInline(admin.TabularInline):
+    model = models.Participant
+    form  = ParticipantForm
+    extra = 0
+
+
+class LeaderInline(admin.TabularInline):
+    model = models.Leader
+    extra = 0
+
+
 @admin.register(models.Team)
 class TeamAdmin(admin.ModelAdmin):
-    pass
+    inlines = [LeaderInline, ParticipantInline]
 
 
 @admin.register(models.Problem)
