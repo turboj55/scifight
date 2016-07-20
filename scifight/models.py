@@ -1,4 +1,5 @@
-from django.db import models
+from django.db   import models
+from django.core import exceptions
 
 NAME_LENGTH = 140
 """ Maximum length of name fields in various models. This value should be
@@ -109,6 +110,20 @@ class Fight(models.Model):
     team3       = models.ForeignKey(Team, related_name="team3", null=True, blank=True)
     team4       = models.ForeignKey(Team, related_name="team4", null=True, blank=True)
     juries      = models.ManyToManyField(Jury, blank=True)
+
+    def clean(self):
+        bad = (self.start_time is not None and
+               self.stop_time  is not None and
+               self.start_time >= self.stop_time)
+        if bad:
+            raise exceptions.ValidationError({"stop_time":
+                "Fight is completed before being started"})
+
+        teams  = {self.team1, self.team2, self.team3, self.team4}
+        teams -= {None}
+        if len(teams) < 2:
+            raise exceptions.ValidationError(
+                "Participating teems are not unigue")
 
     class Meta:
         unique_together = ("room", "fight_num")
