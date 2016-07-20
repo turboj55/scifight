@@ -56,6 +56,7 @@ class ProblemAdmin(admin.ModelAdmin):
 
 @admin.register(models.Fight)
 class FightAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'status','start_time', 'stop_time', ]
     inlines = [JuryInline]
     exclude = ["juries"]
 
