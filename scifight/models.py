@@ -85,23 +85,6 @@ class Problem(models.Model):
         return "#{0}. {1}".format(self.problem_num, self.name)
 
 
-class JuryPoints(models.Model):
-    jury          = models.ForeignKey(Jury)
-    reporter_mark = models.IntegerField()
-    opponent_mark = models.IntegerField()
-    reviewer_mark = models.IntegerField(null=True, blank=True)
-
-
-class FightStage(models.Model):
-    action_num  = models.IntegerField()
-    problem     = models.ForeignKey(Problem)
-    reporter    = models.ForeignKey(Participant, related_name="reporter")
-    opponent    = models.ForeignKey(Participant, related_name="opponent")
-    reviewer    = models.ForeignKey(Participant, related_name="reviewer", null=True, blank=True)
-    refusals    = models.ManyToManyField(Problem, related_name="refusals")
-    points      = models.ManyToManyField(JuryPoints)
-
-
 class Fight(models.Model):
     room        = models.ForeignKey(Room)
     fight_num   = models.IntegerField()
@@ -113,4 +96,25 @@ class Fight(models.Model):
     team3       = models.ForeignKey(Team, related_name="team3", null=True, blank=True)
     team4       = models.ForeignKey(Team, related_name="team4", null=True, blank=True)
     juries      = models.ManyToManyField(Jury)
-    stages      = models.ManyToManyField(FightStage)
+
+
+class FightStage(models.Model):
+    fight       = models.ForeignKey(Fight)
+    action_num  = models.IntegerField()
+    problem     = models.ForeignKey(Problem)
+    reporter    = models.ForeignKey(Participant, related_name="reporter")
+    opponent    = models.ForeignKey(Participant, related_name="opponent")
+    reviewer    = models.ForeignKey(Participant, related_name="reviewer", null=True, blank=True)
+
+
+class Refusal(models.Model):
+    fight_stage = models.ForeignKey(FightStage)
+    problem     = models.ForeignKey(Problem)
+
+
+class JuryPoints(models.Model):
+    fight_stage   = models.ForeignKey(FightStage)
+    jury          = models.ForeignKey(Jury)
+    reporter_mark = models.IntegerField()
+    opponent_mark = models.IntegerField()
+    reviewer_mark = models.IntegerField(null=True, blank=True)
