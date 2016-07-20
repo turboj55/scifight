@@ -97,6 +97,9 @@ class Fight(models.Model):
     team4       = models.ForeignKey(Team, related_name="team4", null=True, blank=True)
     juries      = models.ManyToManyField(Jury, blank=True)
 
+    class Meta:
+        unique_together = ("room", "fight_num")
+
 
 class FightStage(models.Model):
     fight       = models.ForeignKey(Fight)
@@ -106,10 +109,16 @@ class FightStage(models.Model):
     opponent    = models.ForeignKey(Participant, related_name="opponent")
     reviewer    = models.ForeignKey(Participant, related_name="reviewer", null=True, blank=True)
 
+    class Meta:
+        unique_together = ("fight", "action_num")
+
 
 class Refusal(models.Model):
     fight_stage = models.ForeignKey(FightStage)
     problem     = models.ForeignKey(Problem)
+
+    class Meta:
+        unique_together = ("fight_stage", "problem")
 
 
 class JuryPoints(models.Model):
@@ -118,3 +127,6 @@ class JuryPoints(models.Model):
     reporter_mark = models.IntegerField()
     opponent_mark = models.IntegerField()
     reviewer_mark = models.IntegerField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ("fight_stage", "jury")
