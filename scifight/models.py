@@ -86,11 +86,24 @@ class Problem(models.Model):
 
 
 class Fight(models.Model):
+
+    # Python lacks proper enums and constants, so use these static
+    # variables to refer to 'status' values from Python code.
+    NOT_STARTED = 0
+    IN_PROGRESS = 1
+    COMPLETED   = 2
+
+    STATUS_CHOICES = [
+        (NOT_STARTED, "Not started"),
+        (IN_PROGRESS, "In progress"),
+        (COMPLETED,   "Completed")
+    ]
+
     room        = models.ForeignKey(Room)
     fight_num   = models.IntegerField()
     start_time  = models.DateTimeField(null=True, blank=True)
     stop_time   = models.DateTimeField(null=True, blank=True)
-    status      = models.PositiveSmallIntegerField(default=0)
+    status      = models.PositiveSmallIntegerField(default=NOT_STARTED, choices=STATUS_CHOICES)
     team1       = models.ForeignKey(Team, related_name="team1")
     team2       = models.ForeignKey(Team, related_name="team2")
     team3       = models.ForeignKey(Team, related_name="team3", null=True, blank=True)
