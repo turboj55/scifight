@@ -54,6 +54,7 @@ class Leader(models.Model):
     short_name  = models.CharField(max_length=NAME_LENGTH)
     full_name   = models.CharField(max_length=NAME_LENGTH, blank=True)
     origin      = models.ForeignKey(CommonOrigin, null=True, blank=True)
+    team        = models.ForeignKey(Team)
 
     def __str__(self):
         return self.short_name
