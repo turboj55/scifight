@@ -128,11 +128,6 @@ class RoomAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(models.JuryPoints)
-class JuryPointsAdmin(admin.ModelAdmin):
-    pass
-
-
 @admin.register(models.LeaderToJury)
 class LeaderToJuryAdmin(admin.ModelAdmin):
     pass
