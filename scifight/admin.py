@@ -16,6 +16,17 @@ class ParticipantForm(forms.ModelForm):
         }
 
 
+class TeamForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Team
+        exclude = []
+        widgets = {
+            # FIXME: Magic constant!
+            'description': forms.Textarea(attrs={'rows':4, 'cols':40}),
+        }
+
+
 class ParticipantInline(admin.TabularInline):
     model    = models.Participant
     ordering = ["short_name"]
@@ -46,17 +57,23 @@ class JuryInline(admin.TabularInline):
 
 @admin.register(models.Team)
 class TeamAdmin(admin.ModelAdmin):
+    form = TeamForm
     inlines = [LeaderInline, ParticipantInline]
 
 
 @admin.register(models.Problem)
 class ProblemAdmin(admin.ModelAdmin):
+    list_display = ["problem_num", "name"]
+    list_display_links = ["problem_num", "name"]
     ordering = ["problem_num"]
 
 
 @admin.register(models.Fight)
 class FightAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'status','start_time', 'stop_time', ]
+    list_display = ["fight_num", "room", "team1", "team2", "team3", "team4"]
+    list_display_links = ["fight_num", "room"]
+    list_select_related = ["room", "team1", "team2", "team3", "team4"]
+    ordering = ["fight_num", "room"]
     inlines = [JuryInline]
     exclude = ["juries"]
 
@@ -104,18 +121,39 @@ class TeamOriginAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.Participant)
-class TeamOriginAdmin(admin.ModelAdmin):
-    pass
+class ParticipantAdmin(admin.ModelAdmin):
+    list_display = ['full_name', '_team_name', 'grade', 'is_capitan']
+    ordering     = ['full_name']
+    list_select_related = ['team']
+
+    def _team_name(self, model):
+        return model.team.name
+
+    _team_name.admin_order_field = 'team__name'
 
 
 @admin.register(models.Leader)
 class LeaderAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['full_name', '_team_name']
+    ordering     = ['full_name']
+    list_select_related = ['team']
+
+    def _team_name(self, model):
+        return model.team.name
+
+    _team_name.admin_order_field = 'team__name'
 
 
 @admin.register(models.Jury)
 class JuryAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['full_name', '_origin_name']
+    ordering     = ['full_name']
+    list_select_related = ['origin']
+
+    def _origin_name(self, model):
+        return model.origin.name if model.origin else ""
+
+    _origin_name.admin_order_field = 'origin__name'
 
 
 @admin.register(models.CommonOrigin)

@@ -22,6 +22,9 @@ class TeamOrigin(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "Team origin"
+
 
 class Team(models.Model):
     name = models.CharField(max_length=NAME_LENGTH)
@@ -130,6 +133,9 @@ class Fight(models.Model):
         if len(teams_uniq) < 2 or len(teams_uniq) + teams.count(None) != 4:
             raise exceptions.ValidationError(
                 "Participating teams are not unigue")
+
+    def __str__(self):
+        return "Fight {0} at {1}".format(self.fight_num, self.room.name)
 
     class Meta:
         unique_together = ("room", "fight_num")
