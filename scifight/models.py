@@ -154,8 +154,8 @@ class Refusal(models.Model):
 class JuryPoints(models.Model):
     fight_stage   = models.ForeignKey(FightStage)
     jury          = models.ForeignKey(Jury)
-    reporter_mark = models.IntegerField()
-    opponent_mark = models.IntegerField()
+    reporter_mark = models.IntegerField(null=True, blank=True)
+    opponent_mark = models.IntegerField(null=True, blank=True)
     reviewer_mark = models.IntegerField(null=True, blank=True)
 
     class Meta:
