@@ -115,7 +115,7 @@ class Fight(models.Model):
     juries      = models.ManyToManyField(Jury, blank=True)
 
     def clean(self):
-        super(models.Model, self).clean()
+        super().clean()
 
         bad = (self.start_time is not None and
                self.stop_time  is not None and
@@ -152,7 +152,7 @@ class FightStage(models.Model):
     reviewer    = models.ForeignKey(Participant, related_name="reviewer", null=True, blank=True)
 
     def clean(self):
-        super(models.Model, self).clean()
+        super().clean()
 
         guys = [self.reporter, self.opponent, self.reviewer]
         guys_uniq = set(guys) - {None}
@@ -180,7 +180,7 @@ class JuryPoints(models.Model):
     reviewer_mark = models.IntegerField(null=True, blank=True)
 
     def clean_fields(self, exclude=None):
-        super(models.Model, self).clean_fields(exclude)
+        super().clean_fields(exclude)
 
         exclude_set = set()
         if exclude is not None:
