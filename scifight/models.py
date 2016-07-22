@@ -140,8 +140,6 @@ class Fight(models.Model):
     class Meta:
         unique_together = ("room", "fight_num")
 
-    def __str__(self):
-        return "#{0}. {1}".format(self.fight_num, self.room)
 
 class FightStage(models.Model):
     fight       = models.ForeignKey(Fight)
@@ -156,7 +154,7 @@ class FightStage(models.Model):
 
         guys = [self.reporter, self.opponent, self.reviewer]
         guys_uniq = set(guys) - {None}
-        if len(guys_uniq) < 2 or len(guys_uniq) + guys.count(None) != 4:
+        if len(guys_uniq) < 2 or len(guys_uniq) + guys.count(None) != 3:
             raise exceptions.ValidationError(
                 "Single person is assigned for two or more roles")
 
