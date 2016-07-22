@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django         import forms
 from scifight       import models
+from scifight       import utils
 
 admin.AdminSite.site_header = 'SciFight'
 
@@ -59,13 +60,17 @@ class JuryInline(admin.TabularInline):
 class TeamAdmin(admin.ModelAdmin):
     form = TeamForm
     inlines = [LeaderInline, ParticipantInline]
+    list_display = ['name', 'origin', ]
 
 
 @admin.register(models.Problem)
 class ProblemAdmin(admin.ModelAdmin):
-    list_display = ["problem_num", "name"]
-    list_display_links = ["problem_num", "name"]
+    list_display = ["problem_num", "name", '_get_short_description']
+    list_display_links = ["problem_num", "name", '_get_short_description']
     ordering = ["problem_num"]
+
+    def _get_short_description (self, model):
+        return utils.shorten_text(model.description, maxchars=90)
 
 
 @admin.register(models.Fight)
@@ -134,7 +139,7 @@ class ParticipantAdmin(admin.ModelAdmin):
 
 @admin.register(models.Leader)
 class LeaderAdmin(admin.ModelAdmin):
-    list_display = ['full_name', '_team_name']
+    list_display = ['full_name', '_team_name', 'origin']
     ordering     = ['full_name']
     list_select_related = ['team']
 

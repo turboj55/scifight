@@ -163,6 +163,9 @@ class FightStage(models.Model):
     class Meta:
         unique_together = ("fight", "action_num")
 
+    def __str__(self):
+        return 'Fight #{0}, stage #{1} at {2}'.format(self.fight.fight_num, self.action_num, self.fight.room.name)
+
 
 class Refusal(models.Model):
     fight_stage = models.ForeignKey(FightStage)
