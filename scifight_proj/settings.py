@@ -26,6 +26,8 @@ INSTALLED_APPS = [
     'admin_reorder',
 ]
 
+INSTALLED_APPS = ['django_db_prefix',] + INSTALLED_APPS
+
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -119,3 +121,5 @@ ADMIN_REORDER = ('sites',
             'scifight.Tournament',
             'auth.User',
             'auth.Group']))
+
+DB_PREFIX = "db_prefix_"
