@@ -161,6 +161,15 @@ class JuryAdmin(admin.ModelAdmin):
     _origin_name.admin_order_field = 'origin__name'
 
 
+@admin.register(models.Tournament)
+class TournamentAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('short_name',)}
+    list_display = ['short_name', 'slug', '_get_short_description', 'opening_date', 'closing_date']
+
+    def _get_short_description(self, model):
+        return utils.shorten_text(model.description, maxchars=90)
+
+
 @admin.register(models.CommonOrigin)
 class CommonOriginAdmin(admin.ModelAdmin):
     pass

@@ -1,5 +1,11 @@
 from django.db   import models
 from django.core import exceptions
+from django.utils import timezone
+
+SLUG_LENGTH = 20
+""" Maximum length of slug fields. This value must be large enough to hold
+    a URL path component of reasonable length. No one is going to remember
+    and read overly long addresses."""
 
 NAME_LENGTH = 140
 """ Maximum length of name fields in various models. This value should be
@@ -16,6 +22,18 @@ GRADE_LENGTH = 20
     hold a number plus possible brief one-word explanation. """
 
 
+class Tournament(models.Model):
+    full_name     = models.CharField(max_length=NAME_LENGTH)
+    short_name   = models.CharField(max_length=NAME_LENGTH)
+    slug         = models.SlugField(max_length=SLUG_LENGTH, unique=True)
+    description  = models.TextField(blank=True, null=True)
+    opening_date = models.DateField(default=timezone.now)
+    closing_date = models.DateField(blank=True, null=True)
+
+    def __str__(self):
+        return self.short_name
+
+
 class TeamOrigin(models.Model):
     name = models.CharField(max_length=NAME_LENGTH)
 
@@ -27,9 +45,14 @@ class TeamOrigin(models.Model):
 
 
 class Team(models.Model):
-    name = models.CharField(max_length=NAME_LENGTH)
+    tournament  = models.ForeignKey(Tournament)
+    name        = models.CharField(max_length=NAME_LENGTH)
+    slug        = models.SlugField(max_length=SLUG_LENGTH, null=True, blank=True)
     description = models.TextField(max_length=TEXT_LENGTH, blank=True)
-    origin = models.ForeignKey(TeamOrigin, null=True, blank=True)
+    origin      = models.ForeignKey(TeamOrigin, null=True, blank=True)
+
+    class Meta:
+        unique_together = ('tournament', 'slug')
 
     def __str__(self):
         return self.name
@@ -43,6 +66,7 @@ class CommonOrigin(models.Model):
 
 
 class Participant(models.Model):
+    tournament  = models.ForeignKey(Tournament)
     short_name  = models.CharField(max_length=NAME_LENGTH)
     full_name   = models.CharField(max_length=NAME_LENGTH, blank=True)
     origin      = models.ForeignKey(CommonOrigin, null=True, blank=True)
@@ -55,6 +79,7 @@ class Participant(models.Model):
 
 
 class Leader(models.Model):
+    tournament  = models.ForeignKey(Tournament)
     short_name  = models.CharField(max_length=NAME_LENGTH)
     full_name   = models.CharField(max_length=NAME_LENGTH, blank=True)
     origin      = models.ForeignKey(CommonOrigin, null=True, blank=True)
@@ -65,6 +90,7 @@ class Leader(models.Model):
 
 
 class Jury(models.Model):
+    tournament  = models.ForeignKey(Tournament)
     short_name  = models.CharField(max_length=NAME_LENGTH)
     full_name   = models.CharField(max_length=NAME_LENGTH, blank=True)
     origin      = models.ForeignKey(CommonOrigin, null=True, blank=True)
@@ -74,6 +100,7 @@ class Jury(models.Model):
 
 
 class Room(models.Model):
+    tournament  = models.ForeignKey(Tournament)
     name        = models.CharField(max_length=NAME_LENGTH)
 
     def __str__(self):
@@ -81,6 +108,7 @@ class Room(models.Model):
 
 
 class Problem(models.Model):
+    tournament  = models.ForeignKey(Tournament)
     problem_num = models.IntegerField(primary_key=True)
     name        = models.CharField(max_length=NAME_LENGTH)
     description = models.TextField(max_length=TEXT_LENGTH, blank=True)
@@ -103,6 +131,7 @@ class Fight(models.Model):
         (COMPLETED,   "Completed")
     ]
 
+    tournament  = models.ForeignKey(Tournament)
     room        = models.ForeignKey(Room)
     fight_num   = models.IntegerField()
     start_time  = models.DateTimeField(null=True, blank=True)
@@ -166,6 +195,7 @@ class FightStage(models.Model):
 
 
 class Refusal(models.Model):
+    tournament  = models.ForeignKey(Tournament)
     fight_stage = models.ForeignKey(FightStage)
     problem     = models.ForeignKey(Problem)
 
@@ -174,6 +204,7 @@ class Refusal(models.Model):
 
 
 class JuryPoints(models.Model):
+    tournament  = models.ForeignKey(Tournament)
     fight_stage   = models.ForeignKey(FightStage)
     jury          = models.ForeignKey(Jury)
     reporter_mark = models.IntegerField(null=True, blank=True)
@@ -206,8 +237,9 @@ class JuryPoints(models.Model):
 
 
 class LeaderToJury(models.Model):
-    leader = models.ForeignKey(Leader)
-    jury = models.ForeignKey(Jury)
+    tournament  = models.ForeignKey(Tournament)
+    leader      = models.ForeignKey(Leader)
+    jury        = models.ForeignKey(Jury)
 
     class Meta:
         unique_together = ("leader", "jury")
