@@ -58,6 +58,16 @@ class Team(models.Model):
     def __str__(self):
         return self.name
 
+    def clean_fields(self, exclude=None):
+        super().clean_fields(exclude)
+
+        # Force Django to always store SQL NULL for slug instead of an empty string,
+        # thus making 'unique_together' work again. (Note: in SQL NULLs are treated
+        # as unique values.)
+        if self.slug not in exclude:
+            if self.slug == "":
+                self.slug = None
+
 
 class CommonOrigin(models.Model):
     name = models.CharField(max_length=NAME_LENGTH)
