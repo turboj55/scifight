@@ -102,7 +102,7 @@ ADMIN_REORDER = ('sites',
              'scifight.Leader',
              'scifight.Room',
              'scifight.Problem',
-             'scifight.Jury'
+             'scifight.Jury',
              'scifight.LeaderToJury',
              'scifight.TeamOrigin',
              'scifight.CommonOrigin']),
