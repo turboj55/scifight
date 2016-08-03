@@ -125,7 +125,7 @@ class Fight(models.Model):
     IN_PROGRESS = 1
     COMPLETED   = 2
 
-    STATUS_CHOICES = [
+    _STATUS_CHOICES = [
         (NOT_STARTED, "Not started"),
         (IN_PROGRESS, "In progress"),
         (COMPLETED,   "Completed")
@@ -136,7 +136,8 @@ class Fight(models.Model):
     fight_num   = models.IntegerField()
     start_time  = models.DateTimeField(null=True, blank=True)
     stop_time   = models.DateTimeField(null=True, blank=True)
-    status      = models.PositiveSmallIntegerField(default=NOT_STARTED, choices=STATUS_CHOICES)
+    status      = models.PositiveSmallIntegerField(choices=_STATUS_CHOICES,
+                                                   default=NOT_STARTED)
     team1       = models.ForeignKey(Team, related_name="team1")
     team2       = models.ForeignKey(Team, related_name="team2")
     team3       = models.ForeignKey(Team, related_name="team3", null=True, blank=True)
