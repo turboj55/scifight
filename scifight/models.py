@@ -47,7 +47,8 @@ class TeamOrigin(models.Model):
 class Team(models.Model):
     tournament  = models.ForeignKey(Tournament)
     name        = models.CharField(max_length=NAME_LENGTH)
-    slug        = models.SlugField(max_length=SLUG_LENGTH, null=True, blank=True)
+    slug        = models.SlugField(max_length=SLUG_LENGTH,
+                                   null=True, blank=True)
     description = models.TextField(max_length=TEXT_LENGTH, blank=True)
     origin      = models.ForeignKey(TeamOrigin, null=True, blank=True)
 
@@ -140,8 +141,10 @@ class Fight(models.Model):
                                                    default=NOT_STARTED)
     team1       = models.ForeignKey(Team, related_name="team1")
     team2       = models.ForeignKey(Team, related_name="team2")
-    team3       = models.ForeignKey(Team, related_name="team3", null=True, blank=True)
-    team4       = models.ForeignKey(Team, related_name="team4", null=True, blank=True)
+    team3       = models.ForeignKey(Team, related_name="team3",
+                                          null=True, blank=True)
+    team4       = models.ForeignKey(Team, related_name="team4",
+                                          null=True, blank=True)
     juries      = models.ManyToManyField(Jury, blank=True)
 
     def clean(self):
@@ -160,9 +163,11 @@ class Fight(models.Model):
 
         teams = [self.team1, self.team2, self.team3, self.team4]
         teams_uniq = set(teams) - {None}
+
+        # noinspection PyTypeChecker
         if len(teams_uniq) < 2 or len(teams_uniq) + teams.count(None) != 4:
             raise exceptions.ValidationError(
-                "Participating teams are not unigue")
+                "Participating teams are not unique")
 
     def __str__(self):
         return "Fight {0} at {1}".format(self.fight_num, self.room.name)
@@ -177,13 +182,16 @@ class FightStage(models.Model):
     problem     = models.ForeignKey(Problem)
     reporter    = models.ForeignKey(Participant, related_name="reporter")
     opponent    = models.ForeignKey(Participant, related_name="opponent")
-    reviewer    = models.ForeignKey(Participant, related_name="reviewer", null=True, blank=True)
+    reviewer    = models.ForeignKey(Participant, related_name="reviewer",
+                                                 null=True, blank=True)
 
     def clean(self):
         super().clean()
 
         guys = [self.reporter, self.opponent, self.reviewer]
         guys_uniq = set(guys) - {None}
+
+        # noinspection PyTypeChecker
         if len(guys_uniq) < 2 or len(guys_uniq) + guys.count(None) != 3:
             raise exceptions.ValidationError(
                 "Single person is assigned for two or more roles")
@@ -192,7 +200,8 @@ class FightStage(models.Model):
         unique_together = ("fight", "action_num")
 
     def __str__(self):
-        return 'Fight #{0}, stage #{1} at {2}'.format(self.fight.fight_num, self.action_num, self.fight.room.name)
+        return 'Fight #{0}, stage #{1} at {2}'.format(
+            self.fight.fight_num, self.action_num, self.fight.room.name)
 
 
 class Refusal(models.Model):
