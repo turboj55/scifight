@@ -1,6 +1,7 @@
 from django.db   import models
 from django.core import exceptions
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 SLUG_LENGTH = 20
 """ Maximum length of slug fields. This value must be large enough to hold
@@ -20,6 +21,11 @@ TEXT_LENGTH = 1024
 GRADE_LENGTH = 20
 """ Maximum length of the `grade` field. This value should be long enough to
     hold a number plus possible brief one-word explanation. """
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, related_name='scifight_user_profile')
+    tournament = models.ForeignKey('Tournament', blank=True, null=True)
 
 
 class Tournament(models.Model):
