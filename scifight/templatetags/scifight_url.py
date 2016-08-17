@@ -48,8 +48,6 @@ def scifight_url(model):
         and is highly project-specific aid for template shortening.
     """
     def wrapped_reverse(view_name, *args, **kwargs):
-        print(args)
-        print(kwargs)
         try:
             return reverse(view_name, args=args, kwargs=kwargs)
         except NoReverseMatch:
@@ -66,7 +64,7 @@ def scifight_url(model):
     if model_type == models.Team:
         if model.slug:
             return wrapped_reverse('scifight:team_slug',
-                                   tournament_slug=model.tournament,
+                                   tournament_slug=model.tournament.slug,
                                    team_slug=model.slug)
         else:
             return wrapped_reverse('scifight:team_id',
