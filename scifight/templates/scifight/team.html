@@ -1,0 +1,26 @@
+{% extends 'scifight/base.html' %}
+{% load scifight_url %}
+
+{% block content %}
+    <h1>{{ team.name }} team</h1>
+    <p>{{ team.description }}</p>
+    <p>{{ team.origin }}</p>
+    <p>Liders:</p>
+    {% for leader in leaders %}
+        <p>{{ leader.full_name }}</p>
+    {% endfor %}
+    <ul>
+        {% for participant in participants %}
+            <li>
+                <a href="{{ participant | scifight_url }}">
+                    {% if participant.full_name %}{{ participant.full_name }}
+                    {% else %} {{ participant.short_name }}
+                    {% endif %}
+                </a>
+                {% if participant.is_capitan %}
+                    <- capitan
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

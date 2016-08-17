@@ -1,0 +1,17 @@
+{% extends 'scifight/base.html' %}
+
+{% block content %}
+    <h1>{{ tournament.full_name }}</h1>
+    <p>{{ tournament.description }}</p>
+    <p>{{ tournament.opening_date }}</p>
+
+    <ul>
+        <li><a href="{% url 'scifight:schedule' tournament.slug %}"><p>Shedule</p></a></li>
+        <li><a href="{% url 'scifight:rooms' tournament.slug %}"><p>Rooms</p></a></li>
+        <li><a href="{% url 'scifight:teams' tournament.slug %}"><p>Teams</p></a></li>
+        <li><a href="{% url 'scifight:participants' tournament.slug %}"><p>Particapants</p></a></li>
+        <li><a href="{% url 'scifight:leaders' tournament.slug %}"><p>Leaders</p></a></li>
+        <li><a href="{% url 'scifight:juries' tournament.slug %}"><p>Juries</p></a></li>
+        <li><a href="{% url 'scifight:problems' tournament.slug %}"><p>Problems</p></a></li>
+    </ul>
+{% endblock %}

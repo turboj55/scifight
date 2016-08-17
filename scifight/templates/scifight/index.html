@@ -1,0 +1,13 @@
+{% extends 'scifight/base.html' %}
+{% load scifight_url %}
+
+{% block content %}
+    <ul>
+        {% for tournament in tournaments %}
+            <li><a href="{{ tournament | scifight_url }}">
+                    {{ tournament.full_name }} {{ tournament.opening_date }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

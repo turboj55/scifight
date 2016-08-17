@@ -1,0 +1,15 @@
+{% extends 'scifight/base.html' %}
+{% load scifight_url %}
+
+{% block content %}
+    {% for participant in participants %}
+        <p>
+            <a href="{{ participant | scifight_url }}">
+                {% if participant.full_name %}{{ participant.full_name }}
+                {% else %} {{ participant.short_name }}
+                {% endif %}
+            </a>
+        </p>
+        <hr/>
+    {% endfor %}
+{% endblock %}

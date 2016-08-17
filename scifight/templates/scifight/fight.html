@@ -1,0 +1,51 @@
+{% extends 'scifight/base.html' %}
+{% load scifight_url %}
+
+{% block content %}
+    <p>Fight #{{ fight.fight_num }}</p>
+    <p>Room:
+        <a href="{{ fight.room | scifight_url }}">{{ fight.room.name }}</a>
+    </p>
+    <p>Start time: {{ fight.start_time }}</p>
+    <p>Stop time: {{ fight.stop_time }}</p>
+    <p>Status: {{ fight.status }}</p>
+
+    <p>Team 1:
+        <a href="{{ fight.team1 | scifight_url }}">{{ fight.team1.name }}</a>
+    </p>
+    <p>Team 2:
+        <a href="{{ fight.team2 | scifight_url }}">{{ fight.team2.name }}</a>
+    </p>
+    {% if fight.team3 %}
+        <p>Team 3:
+            <a href="{{ fight.team3 | scifight_url }}">{{ fight.team3.name }}</a>
+        </p>
+    {% endif %}
+    {% if fight.team4 %}
+        <p>Team 4:
+            <a href="{{ fight.team4 | scifight_url }}">{{ fight.team4.name }}</a>
+        </p>
+    {% endif %}
+    <p>Juries:</p>
+    <ul>
+    {% for jury in juries %}
+        <li><a href="{{ jury | scifight_url }}">{{ jury.full_name }}</a></li>
+    {% endfor %}
+    </ul>
+    <hr>
+    <h4>Actions:</h4>
+    <hr>
+    <ul>
+        {% for fightstage in fightstages %}
+            <p>#{{ fightstage.action_num }}</p>
+            <p><a href="{{ fightstage.problem | scifight_url }}">
+                Problem: {{ fightstage.problem.name }}</a></p>
+            <p><a href="{{ fightstage.reporter | scifight_url }}">
+                Reporter: {{ fightstage.reporter.short_name }}</a></p>
+            <p><a href="{{ fightstage.opponent | scifight_url }}">
+                Oppenent: {{ fightstage.opponent.short_name }}</a></p>
+            <p><a href="{{ fightstage.reviewer | scifight_url }}">
+                Reviewer: {{ fightstage.reviewer.short_name }}</a></p>
+        {% endfor %}
+    </ul>
+{% endblock %}

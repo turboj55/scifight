@@ -1,0 +1,9 @@
+{% extends 'scifight/base.html' %}
+{% load scifight_url %}
+
+{% block content %}
+    {% for team in teams %}
+        <p><a href="{{ team | scifight_url }}">Team - {{ team.name }}</a></p>
+        <hr/>
+    {% endfor %}
+{% endblock %}

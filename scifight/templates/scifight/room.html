@@ -1,0 +1,11 @@
+{% extends 'scifight/base.html' %}
+{% load scifight_url %}
+
+{% block content %}
+    <h1>{{ room.name }} room</h1>
+    <ul>
+        {% for fight in fights %}
+            <li><a href="{{ fight | scifight_url }}">Fight #{{ fight.fight_num }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

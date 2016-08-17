@@ -1,0 +1,8 @@
+{% extends 'scifight/base.html' %}
+{% load scifight_url %}
+
+{% block content %}
+    <p>{{ leader.full_name }}, ({{ leader.short_name }})</p>
+    <p><a href="{{ leader.team | scifight_url }}">Team: {{ leader.team.name }}</a></p>
+    <p>{{ leader.origin }}</p>
+{% endblock %}
