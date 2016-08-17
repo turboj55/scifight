@@ -11,9 +11,17 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import logging
 from .settings_secret import *
 
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+LOG_PATH = os.path.join(BASE_DIR, 'scifight.log')
+logging.basicConfig(format=u'%(filename)s[LINE:%(lineno)d]# '
+                           u'%(levelname)-8s [%(asctime)s]  %(message)s',
+                    level=logging.DEBUG,
+                    filename=LOG_PATH)
 
 INSTALLED_APPS = [
     'django.contrib.admin',

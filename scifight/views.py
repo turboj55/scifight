@@ -62,5 +62,5 @@ def problems(request, tournament_slug):
     return HttpResponse('This is problems page')
 
 
-def problem(request, tournament_slug, problem_id):
-    return HttpResponse('This is problem  #%s page' % problem_id)
+def problem(request, tournament_slug, problem_num):
+    return HttpResponse('This is problem  #%s page' % problem_num)

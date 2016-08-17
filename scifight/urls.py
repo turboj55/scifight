@@ -18,7 +18,7 @@ tournament_urls = [
     url(r'^juries/$',                                    views.juries,       name='juries'),
     url(r'^jury/(?P<jury_id>[0-9]+)/$',                  views.jury,         name='jury'),
     url(r'^problems/$',                                  views.problems,     name='problems'),
-    url(r'^problem/(?P<problem_id>[0-9]+)/$',            views.problem,      name='problem'),
+    url(r'^problem/(?P<problem_num>[0-9]+)/$',           views.problem,      name='problem'),
 ]
 
 urlpatterns = [
