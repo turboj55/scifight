@@ -3,43 +3,9 @@ from django.contrib import admin
 from django         import forms
 from scifight       import models
 from scifight       import utils
-from django.core    import exceptions
+from scifight       import tournament_specific
 
 admin.AdminSite.site_header = 'SciFight'
-
-
-class TournamentSpecificModelAdmin(admin.ModelAdmin):
-
-    def get_queryset(self, request):
-        self.scifight_user = request.user
-        self._exclude_tournament_field()
-        qs = super().get_queryset(request)
-        if not request.user.is_superuser:
-            tournament_of_user = None
-            # To check if the (OneToOne) relation exists or not,
-            # you can use the hasattr function.
-            # http://stackoverflow.com/questions/3463240/check-if-onetoonefield-is-none-in-django
-            if hasattr(request.user, 'scifight_user_profile'):
-                scifight_user_profile = request.user.scifight_user_profile
-                if scifight_user_profile.tournament:
-                    tournament_of_user = scifight_user_profile.tournament
-            qs = qs.filter(tournament=tournament_of_user)
-        return qs
-
-    def _exclude_tournament_field(self):
-        self.exclude = ()
-        if not self.scifight_user.is_superuser:
-            self.exclude = ('tournament',)
-
-    def save_model(self, request, obj, form, change):
-        if not request.user.is_superuser:
-            if hasattr(request.user, 'scifight_user_profile'):
-                scifight_user_profile = request.user.scifight_user_profile
-                if scifight_user_profile.tournament:
-                    obj.tournament = scifight_user_profile.tournament
-                else:
-                    raise exceptions.PermissionDenied
-        obj.save()
 
 
 class ParticipantForm(forms.ModelForm):
@@ -64,15 +30,17 @@ class TeamForm(forms.ModelForm):
         }
 
 
-class ParticipantInline(admin.TabularInline):
+class ParticipantInline(tournament_specific.InlineMixin, admin.TabularInline):
     model    = models.Participant
+    exclude  = ["tournament"]
     ordering = ["short_name"]
     form     = ParticipantForm
     extra    = 0
 
 
-class LeaderInline(admin.TabularInline):
+class LeaderInline(tournament_specific.InlineMixin, admin.TabularInline):
     model    = models.Leader
+    exclude  = ["tournament"]
     ordering = ["short_name"]
     extra    = 0
 
@@ -93,7 +61,7 @@ class JuryInline(admin.TabularInline):
 
 
 @admin.register(models.Team)
-class TeamAdmin(TournamentSpecificModelAdmin):
+class TeamAdmin(tournament_specific.ModelAdmin):
     fieldset = ['name']
     form = TeamForm
     inlines = [LeaderInline, ParticipantInline]
@@ -101,7 +69,7 @@ class TeamAdmin(TournamentSpecificModelAdmin):
 
 
 @admin.register(models.Problem)
-class ProblemAdmin(TournamentSpecificModelAdmin):
+class ProblemAdmin(tournament_specific.ModelAdmin):
     list_display = ["problem_num", "name", '_get_short_description']
     list_display_links = ["problem_num", "name", '_get_short_description']
     ordering = ["problem_num"]
@@ -111,7 +79,7 @@ class ProblemAdmin(TournamentSpecificModelAdmin):
 
 
 @admin.register(models.Fight)
-class FightAdmin(TournamentSpecificModelAdmin):
+class FightAdmin(tournament_specific.ModelAdmin):
     list_display = ["fight_num", "room", "team1", "team2", "team3", "team4"]
     list_display_links = ["fight_num", "room"]
     list_select_related = ["room", "team1", "team2", "team3", "team4"]
@@ -121,7 +89,7 @@ class FightAdmin(TournamentSpecificModelAdmin):
 
 
 @admin.register(models.FightStage)
-class FightStageAdmin(TournamentSpecificModelAdmin):
+class FightStageAdmin(tournament_specific.ModelAdmin):
     inlines = [RefusalInline, JuryPointsInline]
     ordering = ["fight__fight_num", "fight__room", "action_num"]
     list_display = ["_fight_number", "_fight_room", "_action_num",
@@ -158,15 +126,18 @@ class FightStageAdmin(TournamentSpecificModelAdmin):
 
 
 @admin.register(models.TeamOrigin)
-class TeamOriginAdmin(TournamentSpecificModelAdmin):
+class TeamOriginAdmin(admin.ModelAdmin):
     pass
 
 
 @admin.register(models.Participant)
-class ParticipantAdmin(TournamentSpecificModelAdmin):
+class ParticipantAdmin(tournament_specific.ModelAdmin):
     list_display = ['full_name', '_team_name', 'grade', 'is_capitan']
     ordering     = ['full_name']
     list_select_related = ['team']
+
+    def fill_tournament(self, obj):
+        obj.tournament = obj.team.tournament
 
     def _team_name(self, model):
         return model.team.name
@@ -175,10 +146,13 @@ class ParticipantAdmin(TournamentSpecificModelAdmin):
 
 
 @admin.register(models.Leader)
-class LeaderAdmin(TournamentSpecificModelAdmin):
+class LeaderAdmin(tournament_specific.ModelAdmin):
     list_display = ['full_name', '_team_name', 'origin']
     ordering     = ['full_name']
     list_select_related = ['team']
+
+    def fill_tournament(self, obj):
+        obj.tournament = obj.team.tournament
 
     def _team_name(self, model):
         return model.team.name
@@ -187,7 +161,7 @@ class LeaderAdmin(TournamentSpecificModelAdmin):
 
 
 @admin.register(models.Jury)
-class JuryAdmin(TournamentSpecificModelAdmin):
+class JuryAdmin(tournament_specific.ModelAdmin):
     list_display = ['full_name', '_origin_name']
     ordering     = ['full_name']
     list_select_related = ['origin']
@@ -219,17 +193,17 @@ class TournamentAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.CommonOrigin)
-class CommonOriginAdmin(TournamentSpecificModelAdmin):
+class CommonOriginAdmin(admin.ModelAdmin):
     pass
 
 
 @admin.register(models.Room)
-class RoomAdmin(TournamentSpecificModelAdmin):
+class RoomAdmin(tournament_specific.ModelAdmin):
     pass
 
 
 @admin.register(models.LeaderToJury)
-class LeaderToJuryAdmin(TournamentSpecificModelAdmin):
+class LeaderToJuryAdmin(tournament_specific.ModelAdmin):
     pass
 
 

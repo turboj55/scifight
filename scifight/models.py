@@ -29,7 +29,7 @@ class UserProfile(models.Model):
 
 
 class Tournament(models.Model):
-    full_name     = models.CharField(max_length=NAME_LENGTH)
+    full_name    = models.CharField(max_length=NAME_LENGTH)
     short_name   = models.CharField(max_length=NAME_LENGTH)
     slug         = models.SlugField(max_length=SLUG_LENGTH, unique=True)
     description  = models.TextField(blank=True, null=True)
@@ -91,6 +91,9 @@ class Participant(models.Model):
     team        = models.ForeignKey(Team)
     is_capitan  = models.BooleanField()
 
+    def fill_tournament(self):
+        self.tournament = self.team.tournament
+
     def __str__(self):
         return self.short_name
 
@@ -101,6 +104,9 @@ class Leader(models.Model):
     full_name   = models.CharField(max_length=NAME_LENGTH, blank=True)
     origin      = models.ForeignKey(CommonOrigin, null=True, blank=True)
     team        = models.ForeignKey(Team)
+
+    def fill_tournament(self):
+        self.tournament = self.team.tournament
 
     def __str__(self):
         return self.short_name
