@@ -191,6 +191,11 @@ class Fight(models.Model):
             raise exceptions.ValidationError(
                 "Participating teams are not unique")
 
+        tournaments_of_team = set([team.tournament for team in teams_uniq])
+        if len(tournaments_of_team) > 1:
+            raise exceptions.ValidationError(
+                'Teams belong to different tournaments!')
+
     def __str__(self):
         return "Fight {0} at {1}".format(self.fight_num, self.room.name)
 

@@ -45,14 +45,16 @@ class LeaderInline(tournament_specific.InlineMixin, admin.TabularInline):
     extra    = 0
 
 
-class RefusalInline(admin.TabularInline):
+class RefusalInline(tournament_specific.InlineMixin, admin.TabularInline):
     model = models.Refusal
     extra = 0
+    exclude = ["tournament"]
 
 
-class JuryPointsInline(admin.TabularInline):
+class JuryPointsInline(tournament_specific.InlineMixin, admin.TabularInline):
     model = models.JuryPoints
     extra = 0
+    exclude = ["tournament"]
 
 
 class JuryInline(admin.TabularInline):
@@ -84,17 +86,22 @@ class FightAdmin(tournament_specific.ModelAdmin):
     list_display_links = ["fight_num", "room"]
     list_select_related = ["room", "team1", "team2", "team3", "team4"]
     ordering = ["fight_num", "room"]
+    foreignkey_filtered_fields = ["room", "team1", "team2", "team3", "team4"]
     inlines = [JuryInline]
     exclude = ["juries"]
 
 
 @admin.register(models.FightStage)
 class FightStageAdmin(tournament_specific.ModelAdmin):
+
     inlines = [RefusalInline, JuryPointsInline]
     ordering = ["fight__fight_num", "fight__room", "action_num"]
     list_display = ["_fight_number", "_fight_room", "_action_num",
                     "_team1", "_team2", "_team3"]
 
+    tournament_alias_field = "fight__tournament"
+
+    foreignkey_filtered_fields = ["problem", "fight", "reporter", "opponent", "reviewer"]
     # Instead of having this method here it's possible to just
     # write "action_num" in 'list_display' parameter. But please
     # don't do that, or you would immediately get ugly arrow
@@ -120,6 +127,7 @@ class FightStageAdmin(tournament_specific.ModelAdmin):
     # Not sure if this would help reducing the number of database
     # queries, see http://stackoverflow.com/a/28190954/1447225.
     # TODO: Check if this really helps.
+
     def get_queryset(self, request):
         qs = super(FightStageAdmin, self).get_queryset(request)
         return qs.select_related('fight')
@@ -135,9 +143,7 @@ class ParticipantAdmin(tournament_specific.ModelAdmin):
     list_display = ['full_name', '_team_name', 'grade', 'is_capitan']
     ordering     = ['full_name']
     list_select_related = ['team']
-
-    def fill_tournament(self, obj):
-        obj.tournament = obj.team.tournament
+    foreignkey_filtered_fields = ["team"]
 
     def _team_name(self, model):
         return model.team.name
@@ -150,9 +156,7 @@ class LeaderAdmin(tournament_specific.ModelAdmin):
     list_display = ['full_name', '_team_name', 'origin']
     ordering     = ['full_name']
     list_select_related = ['team']
-
-    def fill_tournament(self, obj):
-        obj.tournament = obj.team.tournament
+    foreignkey_filtered_fields = ["team"]
 
     def _team_name(self, model):
         return model.team.name
@@ -162,9 +166,11 @@ class LeaderAdmin(tournament_specific.ModelAdmin):
 
 @admin.register(models.Jury)
 class JuryAdmin(tournament_specific.ModelAdmin):
-    list_display = ['full_name', '_origin_name']
+    list_display = ['full_name', 'short_name', '_origin_name', 'tournament']
+    list_display_links = ['full_name', 'short_name', 'tournament']
     ordering     = ['full_name']
     list_select_related = ['origin']
+
 
     def _origin_name(self, model):
         return model.origin.name if model.origin else ""
@@ -204,7 +210,7 @@ class RoomAdmin(tournament_specific.ModelAdmin):
 
 @admin.register(models.LeaderToJury)
 class LeaderToJuryAdmin(tournament_specific.ModelAdmin):
-    pass
+    foreignkey_filtered_fields = ["leader", "jury"]
 
 
 class UserInline(admin.StackedInline):
