@@ -58,12 +58,6 @@ class Team(models.Model):
     description = models.TextField(max_length=TEXT_LENGTH, blank=True)
     origin      = models.ForeignKey(TeamOrigin, null=True, blank=True)
 
-    class Meta:
-        unique_together = ('tournament', 'slug')
-
-    def __str__(self):
-        return self.name
-
     def clean_fields(self, exclude=None):
         super().clean_fields(exclude)
 
@@ -73,6 +67,12 @@ class Team(models.Model):
         if self.slug not in exclude:
             if self.slug == "":
                 self.slug = None
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        unique_together = ('tournament', 'slug')
 
 
 class CommonOrigin(models.Model):
@@ -223,12 +223,12 @@ class FightStage(models.Model):
             raise exceptions.ValidationError(
                 "Single person is assigned for two or more roles")
 
-    class Meta:
-        unique_together = ("fight", "action_num")
-
     def __str__(self):
         return 'Fight #{0}, stage #{1} at {2}'.format(
             self.fight.fight_num, self.action_num, self.fight.room.name)
+
+    class Meta:
+        unique_together = ("fight", "action_num")
 
 
 class Refusal(models.Model):
@@ -278,8 +278,8 @@ class LeaderToJury(models.Model):
     leader      = models.ForeignKey(Leader)
     jury        = models.ForeignKey(Jury)
 
-    class Meta:
-        unique_together = ("leader", "jury")
-
     def __str__(self):
         return "{0} -> {1}".format(self.leader, self.jury)
+
+    class Meta:
+        unique_together = ("leader", "jury")
