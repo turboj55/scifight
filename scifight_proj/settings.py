@@ -121,7 +121,7 @@ ADMIN_REORDER = ('sites',
              'scifight.Fight',
              'scifight.FightStage']),
 
-    dict(app='auth',
+    dict(app='scifight',
          label='Website administration',
          models=[
             'scifight.Tournament',

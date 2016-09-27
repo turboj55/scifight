@@ -1,6 +1,7 @@
 from django.db   import models
 from django.core import exceptions
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 SLUG_LENGTH = 20
 """ Maximum length of slug fields. This value must be large enough to hold
@@ -22,8 +23,13 @@ GRADE_LENGTH = 20
     hold a number plus possible brief one-word explanation. """
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, related_name='scifight_user_profile')
+    tournament = models.ForeignKey('Tournament', blank=True, null=True)
+
+
 class Tournament(models.Model):
-    full_name     = models.CharField(max_length=NAME_LENGTH)
+    full_name    = models.CharField(max_length=NAME_LENGTH)
     short_name   = models.CharField(max_length=NAME_LENGTH)
     slug         = models.SlugField(max_length=SLUG_LENGTH, unique=True)
     description  = models.TextField(blank=True, null=True)
@@ -85,6 +91,9 @@ class Participant(models.Model):
     team        = models.ForeignKey(Team)
     is_capitan  = models.BooleanField()
 
+    def fill_tournament(self):
+        self.tournament = self.team.tournament
+
     def __str__(self):
         return self.short_name
 
@@ -95,6 +104,9 @@ class Leader(models.Model):
     full_name   = models.CharField(max_length=NAME_LENGTH, blank=True)
     origin      = models.ForeignKey(CommonOrigin, null=True, blank=True)
     team        = models.ForeignKey(Team)
+
+    def fill_tournament(self):
+        self.tournament = self.team.tournament
 
     def __str__(self):
         return self.short_name
@@ -178,6 +190,11 @@ class Fight(models.Model):
         if len(teams_uniq) < 2 or len(teams_uniq) + teams.count(None) != 4:
             raise exceptions.ValidationError(
                 "Participating teams are not unique")
+
+        tournaments_of_team = set([team.tournament for team in teams_uniq])
+        if len(tournaments_of_team) > 1:
+            raise exceptions.ValidationError(
+                'Teams belong to different tournaments!')
 
     def __str__(self):
         return "Fight {0} at {1}".format(self.fight_num, self.room.name)

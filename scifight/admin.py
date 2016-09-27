@@ -1,7 +1,9 @@
+from django.contrib import auth
 from django.contrib import admin
 from django         import forms
 from scifight       import models
 from scifight       import utils
+from scifight       import tournament_specific
 
 admin.AdminSite.site_header = 'SciFight'
 
@@ -28,27 +30,31 @@ class TeamForm(forms.ModelForm):
         }
 
 
-class ParticipantInline(admin.TabularInline):
+class ParticipantInline(tournament_specific.InlineMixin, admin.TabularInline):
     model    = models.Participant
+    exclude  = ["tournament"]
     ordering = ["short_name"]
     form     = ParticipantForm
     extra    = 0
 
 
-class LeaderInline(admin.TabularInline):
+class LeaderInline(tournament_specific.InlineMixin, admin.TabularInline):
     model    = models.Leader
+    exclude  = ["tournament"]
     ordering = ["short_name"]
     extra    = 0
 
 
-class RefusalInline(admin.TabularInline):
+class RefusalInline(tournament_specific.InlineMixin, admin.TabularInline):
     model = models.Refusal
     extra = 0
+    exclude = ["tournament"]
 
 
-class JuryPointsInline(admin.TabularInline):
+class JuryPointsInline(tournament_specific.InlineMixin, admin.TabularInline):
     model = models.JuryPoints
     extra = 0
+    exclude = ["tournament"]
 
 
 class JuryInline(admin.TabularInline):
@@ -57,14 +63,15 @@ class JuryInline(admin.TabularInline):
 
 
 @admin.register(models.Team)
-class TeamAdmin(admin.ModelAdmin):
+class TeamAdmin(tournament_specific.ModelAdmin):
+    fieldset = ['name']
     form = TeamForm
     inlines = [LeaderInline, ParticipantInline]
     list_display = ['name', 'origin', ]
 
 
 @admin.register(models.Problem)
-class ProblemAdmin(admin.ModelAdmin):
+class ProblemAdmin(tournament_specific.ModelAdmin):
     list_display = ["problem_num", "name", '_get_short_description']
     list_display_links = ["problem_num", "name", '_get_short_description']
     ordering = ["problem_num"]
@@ -74,22 +81,27 @@ class ProblemAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.Fight)
-class FightAdmin(admin.ModelAdmin):
+class FightAdmin(tournament_specific.ModelAdmin):
     list_display = ["fight_num", "room", "team1", "team2", "team3", "team4"]
     list_display_links = ["fight_num", "room"]
     list_select_related = ["room", "team1", "team2", "team3", "team4"]
     ordering = ["fight_num", "room"]
+    foreignkey_filtered_fields = ["room", "team1", "team2", "team3", "team4"]
     inlines = [JuryInline]
     exclude = ["juries"]
 
 
 @admin.register(models.FightStage)
-class FightStageAdmin(admin.ModelAdmin):
+class FightStageAdmin(tournament_specific.ModelAdmin):
+
     inlines = [RefusalInline, JuryPointsInline]
     ordering = ["fight__fight_num", "fight__room", "action_num"]
     list_display = ["_fight_number", "_fight_room", "_action_num",
                     "_team1", "_team2", "_team3"]
 
+    tournament_alias_field = "fight__tournament"
+
+    foreignkey_filtered_fields = ["problem", "fight", "reporter", "opponent", "reviewer"]
     # Instead of having this method here it's possible to just
     # write "action_num" in 'list_display' parameter. But please
     # don't do that, or you would immediately get ugly arrow
@@ -115,6 +127,7 @@ class FightStageAdmin(admin.ModelAdmin):
     # Not sure if this would help reducing the number of database
     # queries, see http://stackoverflow.com/a/28190954/1447225.
     # TODO: Check if this really helps.
+
     def get_queryset(self, request):
         qs = super(FightStageAdmin, self).get_queryset(request)
         return qs.select_related('fight')
@@ -126,10 +139,11 @@ class TeamOriginAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.Participant)
-class ParticipantAdmin(admin.ModelAdmin):
+class ParticipantAdmin(tournament_specific.ModelAdmin):
     list_display = ['full_name', '_team_name', 'grade', 'is_capitan']
     ordering     = ['full_name']
     list_select_related = ['team']
+    foreignkey_filtered_fields = ["team"]
 
     def _team_name(self, model):
         return model.team.name
@@ -138,10 +152,11 @@ class ParticipantAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.Leader)
-class LeaderAdmin(admin.ModelAdmin):
+class LeaderAdmin(tournament_specific.ModelAdmin):
     list_display = ['full_name', '_team_name', 'origin']
     ordering     = ['full_name']
     list_select_related = ['team']
+    foreignkey_filtered_fields = ["team"]
 
     def _team_name(self, model):
         return model.team.name
@@ -150,10 +165,12 @@ class LeaderAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.Jury)
-class JuryAdmin(admin.ModelAdmin):
-    list_display = ['full_name', '_origin_name']
+class JuryAdmin(tournament_specific.ModelAdmin):
+    list_display = ['full_name', 'short_name', '_origin_name', 'tournament']
+    list_display_links = ['full_name', 'short_name', 'tournament']
     ordering     = ['full_name']
     list_select_related = ['origin']
+
 
     def _origin_name(self, model):
         return model.origin.name if model.origin else ""
@@ -169,6 +186,17 @@ class TournamentAdmin(admin.ModelAdmin):
     def _get_short_description(self, model):
         return utils.shorten_text(model.description, maxchars=90)
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if not request.user.is_superuser:
+            tournament_id = None
+            if hasattr(request.user, 'scifight_user_profile'):
+                if request.user.scifight_user_profile.tournament:
+                    scifight_user_profile = request.user.scifight_user_profile
+                    tournament_id = scifight_user_profile.tournament.id
+            qs = qs.filter(id=tournament_id)
+        return qs
+
 
 @admin.register(models.CommonOrigin)
 class CommonOriginAdmin(admin.ModelAdmin):
@@ -176,10 +204,22 @@ class CommonOriginAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.Room)
-class RoomAdmin(admin.ModelAdmin):
+class RoomAdmin(tournament_specific.ModelAdmin):
     pass
 
 
 @admin.register(models.LeaderToJury)
-class LeaderToJuryAdmin(admin.ModelAdmin):
-    pass
+class LeaderToJuryAdmin(tournament_specific.ModelAdmin):
+    foreignkey_filtered_fields = ["leader", "jury"]
+
+
+class UserInline(admin.StackedInline):
+    model = models.UserProfile
+
+
+class UserAdmin(auth.admin.UserAdmin):
+    inlines = [UserInline, ]
+
+
+admin.site.unregister(auth.models.User)
+admin.site.register(auth.models.User, UserAdmin)
