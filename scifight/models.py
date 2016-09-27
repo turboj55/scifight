@@ -24,24 +24,24 @@ GRADE_LENGTH = 20
 
 
 class UserProfile(models.Model):
-    tournament = models.ForeignKey('Tournament', blank=True, null=True)
-    user = models.OneToOneField(User, related_name='scifight_extra')
+    user          = models.OneToOneField(User, related_name='scifight_extra')
+    tournament    = models.ForeignKey('Tournament', blank=True, null=True)
 
 
 class Tournament(models.Model):
-    full_name    = models.CharField(max_length=NAME_LENGTH)
-    short_name   = models.CharField(max_length=NAME_LENGTH)
-    slug         = models.SlugField(max_length=SLUG_LENGTH, unique=True)
-    description  = models.TextField(blank=True, null=True)
-    opening_date = models.DateField(default=timezone.now)
-    closing_date = models.DateField(blank=True, null=True)
+    full_name     = models.CharField(max_length=NAME_LENGTH)
+    short_name    = models.CharField(max_length=NAME_LENGTH)
+    slug          = models.SlugField(max_length=SLUG_LENGTH, unique=True)
+    description   = models.TextField(blank=True, null=True)
+    opening_date  = models.DateField(default=timezone.now)
+    closing_date  = models.DateField(blank=True, null=True)
 
     def __str__(self):
         return self.short_name
 
 
 class TeamOrigin(models.Model):
-    name = models.CharField(max_length=NAME_LENGTH)
+    name          = models.CharField(max_length=NAME_LENGTH)
 
     def __str__(self):
         return self.name
@@ -51,12 +51,12 @@ class TeamOrigin(models.Model):
 
 
 class Team(models.Model):
-    tournament  = models.ForeignKey(Tournament)
-    name        = models.CharField(max_length=NAME_LENGTH)
-    slug        = models.SlugField(max_length=SLUG_LENGTH,
-                                   null=True, blank=True)
-    description = models.TextField(max_length=TEXT_LENGTH, blank=True)
-    origin      = models.ForeignKey(TeamOrigin, null=True, blank=True)
+    tournament    = models.ForeignKey(Tournament)
+    name          = models.CharField(max_length=NAME_LENGTH)
+    slug          = models.SlugField(max_length=SLUG_LENGTH,
+                                     null=True, blank=True)
+    description   = models.TextField(max_length=TEXT_LENGTH, blank=True)
+    origin        = models.ForeignKey(TeamOrigin, null=True, blank=True)
 
     def clean_fields(self, exclude=None):
         super().clean_fields(exclude)
@@ -76,20 +76,20 @@ class Team(models.Model):
 
 
 class CommonOrigin(models.Model):
-    name = models.CharField(max_length=NAME_LENGTH)
+    name          = models.CharField(max_length=NAME_LENGTH)
 
     def __str__(self):
         return self.name
 
 
 class Participant(models.Model):
-    tournament  = models.ForeignKey(Tournament)
-    short_name  = models.CharField(max_length=NAME_LENGTH)
-    full_name   = models.CharField(max_length=NAME_LENGTH, blank=True)
-    origin      = models.ForeignKey(CommonOrigin, null=True, blank=True)
-    grade       = models.CharField(max_length=GRADE_LENGTH, blank=True)
-    team        = models.ForeignKey(Team)
-    is_capitan  = models.BooleanField()
+    tournament    = models.ForeignKey(Tournament)
+    short_name    = models.CharField(max_length=NAME_LENGTH)
+    full_name     = models.CharField(max_length=NAME_LENGTH, blank=True)
+    origin        = models.ForeignKey(CommonOrigin, null=True, blank=True)
+    grade         = models.CharField(max_length=GRADE_LENGTH, blank=True)
+    team          = models.ForeignKey(Team)
+    is_capitan    = models.BooleanField()
 
     def fill_tournament(self):
         self.tournament = self.team.tournament
@@ -99,11 +99,11 @@ class Participant(models.Model):
 
 
 class Leader(models.Model):
-    tournament  = models.ForeignKey(Tournament)
-    short_name  = models.CharField(max_length=NAME_LENGTH)
-    full_name   = models.CharField(max_length=NAME_LENGTH, blank=True)
-    origin      = models.ForeignKey(CommonOrigin, null=True, blank=True)
-    team        = models.ForeignKey(Team)
+    tournament    = models.ForeignKey(Tournament)
+    short_name    = models.CharField(max_length=NAME_LENGTH)
+    full_name     = models.CharField(max_length=NAME_LENGTH, blank=True)
+    origin        = models.ForeignKey(CommonOrigin, null=True, blank=True)
+    team          = models.ForeignKey(Team)
 
     def fill_tournament(self):
         self.tournament = self.team.tournament
@@ -113,28 +113,28 @@ class Leader(models.Model):
 
 
 class Jury(models.Model):
-    tournament  = models.ForeignKey(Tournament)
-    short_name  = models.CharField(max_length=NAME_LENGTH)
-    full_name   = models.CharField(max_length=NAME_LENGTH, blank=True)
-    origin      = models.ForeignKey(CommonOrigin, null=True, blank=True)
+    tournament    = models.ForeignKey(Tournament)
+    short_name    = models.CharField(max_length=NAME_LENGTH)
+    full_name     = models.CharField(max_length=NAME_LENGTH, blank=True)
+    origin        = models.ForeignKey(CommonOrigin, null=True, blank=True)
 
     def __str__(self):
         return self.short_name
 
 
 class Room(models.Model):
-    tournament  = models.ForeignKey(Tournament)
-    name        = models.CharField(max_length=NAME_LENGTH)
+    tournament    = models.ForeignKey(Tournament)
+    name          = models.CharField(max_length=NAME_LENGTH)
 
     def __str__(self):
         return self.name
 
 
 class Problem(models.Model):
-    tournament  = models.ForeignKey(Tournament)
-    problem_num = models.IntegerField(primary_key=True)
-    name        = models.CharField(max_length=NAME_LENGTH)
-    description = models.TextField(max_length=TEXT_LENGTH, blank=True)
+    tournament    = models.ForeignKey(Tournament)
+    problem_num   = models.IntegerField(primary_key=True)
+    name          = models.CharField(max_length=NAME_LENGTH)
+    description   = models.TextField(max_length=TEXT_LENGTH, blank=True)
 
     def __str__(self):
         return "#{0}. {1}".format(self.problem_num, self.name)
@@ -154,20 +154,20 @@ class Fight(models.Model):
         (COMPLETED,   "Completed")
     ]
 
-    tournament  = models.ForeignKey(Tournament)
-    room        = models.ForeignKey(Room)
-    fight_num   = models.IntegerField()
-    start_time  = models.DateTimeField(null=True, blank=True)
-    stop_time   = models.DateTimeField(null=True, blank=True)
-    status      = models.PositiveSmallIntegerField(choices=_STATUS_CHOICES,
-                                                   default=NOT_STARTED)
-    team1       = models.ForeignKey(Team, related_name="team1")
-    team2       = models.ForeignKey(Team, related_name="team2")
-    team3       = models.ForeignKey(Team, related_name="team3",
-                                          null=True, blank=True)
-    team4       = models.ForeignKey(Team, related_name="team4",
-                                          null=True, blank=True)
-    juries      = models.ManyToManyField(Jury, blank=True)
+    tournament    = models.ForeignKey(Tournament)
+    room          = models.ForeignKey(Room)
+    fight_num     = models.IntegerField()
+    start_time    = models.DateTimeField(null=True, blank=True)
+    stop_time     = models.DateTimeField(null=True, blank=True)
+    status        = models.PositiveSmallIntegerField(choices=_STATUS_CHOICES,
+                                                     default=NOT_STARTED)
+    team1         = models.ForeignKey(Team, related_name="team1")
+    team2         = models.ForeignKey(Team, related_name="team2")
+    team3         = models.ForeignKey(Team, related_name="team3",
+                                            null=True, blank=True)
+    team4         = models.ForeignKey(Team, related_name="team4",
+                                            null=True, blank=True)
+    juries        = models.ManyToManyField(Jury, blank=True)
 
     def clean(self):
         super().clean()
@@ -204,13 +204,13 @@ class Fight(models.Model):
 
 
 class FightStage(models.Model):
-    fight       = models.ForeignKey(Fight)
-    action_num  = models.IntegerField()
-    problem     = models.ForeignKey(Problem)
-    reporter    = models.ForeignKey(Participant, related_name="reporter")
-    opponent    = models.ForeignKey(Participant, related_name="opponent")
-    reviewer    = models.ForeignKey(Participant, related_name="reviewer",
-                                                 null=True, blank=True)
+    fight         = models.ForeignKey(Fight)
+    action_num    = models.IntegerField()
+    problem       = models.ForeignKey(Problem)
+    reporter      = models.ForeignKey(Participant, related_name="reporter")
+    opponent      = models.ForeignKey(Participant, related_name="opponent")
+    reviewer      = models.ForeignKey(Participant, related_name="reviewer",
+                                                   null=True, blank=True)
 
     def clean(self):
         super().clean()
@@ -232,16 +232,16 @@ class FightStage(models.Model):
 
 
 class Refusal(models.Model):
-    tournament  = models.ForeignKey(Tournament)
-    fight_stage = models.ForeignKey(FightStage)
-    problem     = models.ForeignKey(Problem)
+    tournament    = models.ForeignKey(Tournament)
+    fight_stage   = models.ForeignKey(FightStage)
+    problem       = models.ForeignKey(Problem)
 
     class Meta:
         unique_together = ("fight_stage", "problem")
 
 
 class JuryPoints(models.Model):
-    tournament  = models.ForeignKey(Tournament)
+    tournament    = models.ForeignKey(Tournament)
     fight_stage   = models.ForeignKey(FightStage)
     jury          = models.ForeignKey(Jury)
     reporter_mark = models.IntegerField(null=True, blank=True)
@@ -274,9 +274,9 @@ class JuryPoints(models.Model):
 
 
 class LeaderToJury(models.Model):
-    tournament  = models.ForeignKey(Tournament)
-    leader      = models.ForeignKey(Leader)
-    jury        = models.ForeignKey(Jury)
+    tournament    = models.ForeignKey(Tournament)
+    leader        = models.ForeignKey(Leader)
+    jury          = models.ForeignKey(Jury)
 
     def __str__(self):
         return "{0} -> {1}".format(self.leader, self.jury)
