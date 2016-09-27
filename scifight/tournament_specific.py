@@ -75,8 +75,8 @@ class ModelAdmin(admin.ModelAdmin):
         # To check if the (OneToOne) relation exists or not,
         # you can use the hasattr function.
         # http://stackoverflow.com/questions/3463240
-        if hasattr(request.user, 'scifight_user_profile'):
-            scifight_user_profile = request.user.scifight_user_profile
+        if hasattr(request.user, 'scifight_extra'):
+            scifight_user_profile = request.user.scifight_extra
             if scifight_user_profile.tournament:
                 tournament_of_user = scifight_user_profile.tournament
 
@@ -88,8 +88,8 @@ class ModelAdmin(admin.ModelAdmin):
             if hasattr(obj, "fill_tournament"):
                 obj.fill_tournament()
         else:
-            if hasattr(request.user, 'scifight_user_profile'):
-                scifight_user_profile = request.user.scifight_user_profile
+            if hasattr(request.user, 'scifight_extra'):
+                scifight_user_profile = request.user.scifight_extra
                 if scifight_user_profile.tournament:
                     obj.tournament = scifight_user_profile.tournament
                 else:

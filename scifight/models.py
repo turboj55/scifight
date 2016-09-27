@@ -24,8 +24,8 @@ GRADE_LENGTH = 20
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, related_name='scifight_user_profile')
     tournament = models.ForeignKey('Tournament', blank=True, null=True)
+    user = models.OneToOneField(User, related_name='scifight_extra')
 
 
 class Tournament(models.Model):
