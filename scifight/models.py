@@ -61,9 +61,12 @@ class Team(models.Model):
     def clean_fields(self, exclude=None):
         super().clean_fields(exclude)
 
-        # Force Django to always store SQL NULL for slug instead of an empty string,
-        # thus making 'unique_together' work again. (Note: in SQL NULLs are treated
-        # as unique values.)
+        if exclude is None:
+            exclude = []
+
+        # Force Django to always store SQL NULL for slug instead of an empty
+        # string, thus making 'unique_together' work again.
+        # NOTE: in SQL NULLs are treated as unique values.
         if self.slug not in exclude:
             if self.slug == "":
                 self.slug = None
@@ -176,25 +179,25 @@ class Fight(models.Model):
                self.stop_time  is not None and
                self.start_time >= self.stop_time)
         if bad:
-            raise exceptions.ValidationError({"stop_time":
-                "Fight is completed before being started"})
+            msg = "Fight is completed before being started"
+            raise exceptions.ValidationError({"stop_time": msg})
 
         if self.team3 is None and self.team4 is not None:
-            raise exceptions.ValidationError({"team3":
-                "Team 3 must be given when team 4 is given"})
+            msg = "Team 3 must be given when team 4 is given"
+            raise exceptions.ValidationError({"team3": msg})
 
         teams = [self.team1, self.team2, self.team3, self.team4]
         teams_uniq = set(teams) - {None}
 
         # noinspection PyTypeChecker
         if len(teams_uniq) < 2 or len(teams_uniq) + teams.count(None) != 4:
-            raise exceptions.ValidationError(
-                "Participating teams are not unique")
+            msg = "Participating teams are not unique"
+            raise exceptions.ValidationError(msg)
 
         tournaments_of_team = set([team.tournament for team in teams_uniq])
         if len(tournaments_of_team) > 1:
-            raise exceptions.ValidationError(
-                'Teams belong to different tournaments!')
+            msg = 'Teams belong to different tournaments!'
+            raise exceptions.ValidationError(msg)
 
     def __str__(self):
         return "Fight {0} at {1}".format(self.fight_num, self.room.name)
@@ -220,8 +223,8 @@ class FightStage(models.Model):
 
         # noinspection PyTypeChecker
         if len(guys_uniq) < 2 or len(guys_uniq) + guys.count(None) != 3:
-            raise exceptions.ValidationError(
-                "Single person is assigned for two or more roles")
+            msg = "Single person is assigned for two or more roles"
+            raise exceptions.ValidationError(msg)
 
     def __str__(self):
         return 'Fight #{0}, stage #{1} at {2}'.format(
@@ -251,23 +254,22 @@ class JuryPoints(models.Model):
     def clean_fields(self, exclude=None):
         super().clean_fields(exclude)
 
-        exclude_set = set()
-        if exclude is not None:
-            exclude_set = set(exclude)
+        if exclude is None:
+            exclude = []
 
-        if "reviewer_mark" not in exclude_set:
+        if "reviewer_mark" not in exclude:
             bad = (self.reviewer_mark is None and
                    self.fight_stage.fight.team3 is not None)
             if bad:
-                raise exceptions.ValidationError({"reviewer_mark":
-                    "Reviewer mark must be set, because there is a " +
-                    "reviewing team in this fight"})
+                msg = "Reviewer mark must be set, because there is a " \
+                      "reviewing team in this fight"
+                raise exceptions.ValidationError({"reviewer_mark": msg })
 
-        if "jury" not in exclude_set:
+        if "jury" not in exclude:
             juries_set = set(self.fight_stage.fight.juries.all())
             if self.jury not in juries_set:
-                raise exceptions.ValidationError({"jury":
-                    "Selected jury doesn't take part in the fight"})
+                msg = "Selected jury doesn't take part in the fight"
+                raise exceptions.ValidationError({"jury": msg })
 
     class Meta:
         unique_together = ("fight_stage", "jury")
