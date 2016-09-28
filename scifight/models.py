@@ -88,7 +88,7 @@ class CommonOrigin(models.Model):
 class Participant(models.Model):
     tournament    = models.ForeignKey(Tournament)
     short_name    = models.CharField(max_length=NAME_LENGTH)
-    full_name     = models.CharField(max_length=NAME_LENGTH, blank=True)
+    full_name     = models.CharField(max_length=NAME_LENGTH)
     origin        = models.ForeignKey(CommonOrigin, null=True, blank=True)
     grade         = models.CharField(max_length=GRADE_LENGTH, blank=True)
     team          = models.ForeignKey(Team)
@@ -104,7 +104,7 @@ class Participant(models.Model):
 class Leader(models.Model):
     tournament    = models.ForeignKey(Tournament)
     short_name    = models.CharField(max_length=NAME_LENGTH)
-    full_name     = models.CharField(max_length=NAME_LENGTH, blank=True)
+    full_name     = models.CharField(max_length=NAME_LENGTH)
     origin        = models.ForeignKey(CommonOrigin, null=True, blank=True)
     team          = models.ForeignKey(Team)
 
@@ -118,7 +118,7 @@ class Leader(models.Model):
 class Juror(models.Model):
     tournament    = models.ForeignKey(Tournament)
     short_name    = models.CharField(max_length=NAME_LENGTH)
-    full_name     = models.CharField(max_length=NAME_LENGTH, blank=True)
+    full_name     = models.CharField(max_length=NAME_LENGTH)
     origin        = models.ForeignKey(CommonOrigin, null=True, blank=True)
 
     def __str__(self):
