@@ -31,77 +31,83 @@ class TeamForm(forms.ModelForm):
 
 
 class ParticipantInline(tournament_specific.InlineMixin, admin.TabularInline):
-    model    = models.Participant
-    exclude  = ["tournament"]
-    ordering = ["short_name"]
-    form     = ParticipantForm
-    extra    = 0
+    model         = models.Participant
+    form          = ParticipantForm
+    exclude       = ["tournament"]
+    ordering      = ["short_name"]
+    extra         = 0
 
 
 class LeaderInline(tournament_specific.InlineMixin, admin.TabularInline):
-    model    = models.Leader
-    exclude  = ["tournament"]
-    ordering = ["short_name"]
-    extra    = 0
+    model         = models.Leader
+    exclude       = ["tournament"]
+    ordering      = ["short_name"]
+    extra         = 0
 
 
 class RefusalInline(tournament_specific.InlineMixin, admin.TabularInline):
-    model = models.Refusal
-    extra = 0
-    exclude = ["tournament"]
+    model         = models.Refusal
+    exclude       = ["tournament"]
+    extra         = 0
 
 
 class JuryPointsInline(tournament_specific.InlineMixin, admin.TabularInline):
-    model = models.JuryPoints
-    extra = 0
-    exclude = ["tournament"]
+    model         = models.JuryPoints
+    exclude       = ["tournament"]
+    extra         = 0
 
 
 class JuryInline(admin.TabularInline):
-    model = models.Fight.juries.through
-    extra = 0
+    model         = models.Fight.juries.through
+    extra         = 0
 
 
 @admin.register(models.Team)
 class TeamAdmin(tournament_specific.ModelAdmin):
-    fieldset = ['name']
-    form = TeamForm
-    inlines = [LeaderInline, ParticipantInline]
-    list_display = ['name', 'origin', ]
+    form          = TeamForm
+    fieldset      = ['name']
+    list_display  = ['name', 'origin', ]
+    inlines       = [LeaderInline, ParticipantInline]
 
 
 @admin.register(models.Problem)
 class ProblemAdmin(tournament_specific.ModelAdmin):
-    list_display = ["problem_num", "name", '_get_short_description']
-    list_display_links = ["problem_num", "name", '_get_short_description']
-    ordering = ["problem_num"]
+    ordering      = ["problem_num"]
+    list_display  = ["problem_num", "name", '_get_short_description']
+    list_display_links \
+                  = ["problem_num", "name", '_get_short_description']
 
-    def _get_short_description (self, model):
+    def _get_short_description(self, model):
         return utils.shorten_text(model.description, maxchars=90)
 
 
 @admin.register(models.Fight)
 class FightAdmin(tournament_specific.ModelAdmin):
-    list_display = ["fight_num", "room", "team1", "team2", "team3", "team4"]
-    list_display_links = ["fight_num", "room"]
-    list_select_related = ["room", "team1", "team2", "team3", "team4"]
-    ordering = ["fight_num", "room"]
-    foreignkey_filtered_fields = ["room", "team1", "team2", "team3", "team4"]
-    inlines = [JuryInline]
-    exclude = ["juries"]
+    inlines       = [JuryInline]
+    exclude       = ["juries"]
+    ordering      = ["fight_num", "room"]
+    list_display  = ["fight_num", "room", "team1", "team2", "team3", "team4"]
+    list_display_links \
+                  = ["fight_num", "room"]
+    list_select_related \
+                  = ["room", "team1", "team2", "team3", "team4"]
+    foreignkey_filtered_fields \
+                  = ["room", "team1", "team2", "team3", "team4"]
+
 
 
 @admin.register(models.FightStage)
 class FightStageAdmin(tournament_specific.ModelAdmin):
+    inlines       = [RefusalInline, JuryPointsInline]
+    ordering      = ["fight__fight_num", "fight__room", "action_num"]
+    list_display  = ["_fight_number", "_fight_room", "_action_num",
+                     "_team1", "_team2", "_team3"]
+    list_select_related = ["fight"]
 
-    inlines = [RefusalInline, JuryPointsInline]
-    ordering = ["fight__fight_num", "fight__room", "action_num"]
-    list_display = ["_fight_number", "_fight_room", "_action_num",
-                    "_team1", "_team2", "_team3"]
+    tournament_alias_field     = "fight__tournament"
+    foreignkey_filtered_fields = ["problem", "fight",
+                                  "reporter", "opponent", "reviewer"]
 
-    tournament_alias_field = "fight__tournament"
-
-    foreignkey_filtered_fields = ["problem", "fight", "reporter", "opponent", "reviewer"]
     # Instead of having this method here it's possible to just
     # write "action_num" in 'list_display' parameter. But please
     # don't do that, or you would immediately get ugly arrow
@@ -124,14 +130,6 @@ class FightStageAdmin(tournament_specific.ModelAdmin):
     def _team3(self, model):
         return model.fight.team3
 
-    # Not sure if this would help reducing the number of database
-    # queries, see http://stackoverflow.com/a/28190954/1447225.
-    # TODO: Check if this really helps.
-
-    def get_queryset(self, request):
-        qs = super(FightStageAdmin, self).get_queryset(request)
-        return qs.select_related('fight')
-
 
 @admin.register(models.TeamOrigin)
 class TeamOriginAdmin(admin.ModelAdmin):
@@ -140,8 +138,8 @@ class TeamOriginAdmin(admin.ModelAdmin):
 
 @admin.register(models.Participant)
 class ParticipantAdmin(tournament_specific.ModelAdmin):
-    list_display = ['full_name', '_team_name', 'grade', 'is_capitan']
-    ordering     = ['full_name']
+    ordering      = ['full_name']
+    list_display  = ['full_name', '_team_name', 'grade', 'is_capitan']
     list_select_related = ['team']
     foreignkey_filtered_fields = ["team"]
 
@@ -153,8 +151,8 @@ class ParticipantAdmin(tournament_specific.ModelAdmin):
 
 @admin.register(models.Leader)
 class LeaderAdmin(tournament_specific.ModelAdmin):
-    list_display = ['full_name', '_team_name', 'origin']
-    ordering     = ['full_name']
+    ordering      = ['full_name']
+    list_display  = ['full_name', '_team_name', 'origin']
     list_select_related = ['team']
     foreignkey_filtered_fields = ["team"]
 
@@ -166,11 +164,10 @@ class LeaderAdmin(tournament_specific.ModelAdmin):
 
 @admin.register(models.Jury)
 class JuryAdmin(tournament_specific.ModelAdmin):
-    list_display = ['full_name', 'short_name', '_origin_name', 'tournament']
+    ordering      = ['full_name']
+    list_display  = ['full_name', 'short_name', '_origin_name', 'tournament']
     list_display_links = ['full_name', 'short_name', 'tournament']
-    ordering     = ['full_name']
     list_select_related = ['origin']
-
 
     def _origin_name(self, model):
         return model.origin.name if model.origin else ""
@@ -181,11 +178,13 @@ class JuryAdmin(tournament_specific.ModelAdmin):
 @admin.register(models.Tournament)
 class TournamentAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('short_name',)}
-    list_display = ['short_name', 'slug', '_get_short_description', 'opening_date', 'closing_date']
+    list_display = ['short_name', 'slug', '_get_short_description',
+                    'opening_date', 'closing_date']
 
     def _get_short_description(self, model):
         return utils.shorten_text(model.description, maxchars=90)
 
+    # TODO: Move this method into 'tournament_specific' module.
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if not request.user.is_superuser:
@@ -212,6 +211,7 @@ class RoomAdmin(tournament_specific.ModelAdmin):
 class LeaderToJuryAdmin(tournament_specific.ModelAdmin):
     foreignkey_filtered_fields = ["leader", "jury"]
 
+# ---
 
 class UserInline(admin.StackedInline):
     model = models.UserProfile
