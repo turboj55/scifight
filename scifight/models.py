@@ -92,7 +92,7 @@ class Participant(models.Model):
     origin        = models.ForeignKey(CommonOrigin, null=True, blank=True)
     grade         = models.CharField(max_length=GRADE_LENGTH, blank=True)
     team          = models.ForeignKey(Team)
-    is_capitan    = models.BooleanField()
+    is_captain    = models.BooleanField()
 
     def fill_tournament(self):
         self.tournament = self.team.tournament

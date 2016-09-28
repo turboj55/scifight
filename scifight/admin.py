@@ -139,7 +139,7 @@ class TeamOriginAdmin(admin.ModelAdmin):
 @admin.register(models.Participant)
 class ParticipantAdmin(tournament_specific.ModelAdmin):
     ordering      = ['full_name']
-    list_display  = ['full_name', '_team_name', 'grade', 'is_capitan']
+    list_display  = ['full_name', '_team_name', 'grade', 'is_captain']
     list_select_related = ['team']
     foreignkey_filtered_fields = ["team"]
 
