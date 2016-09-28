@@ -62,6 +62,16 @@ class JurorInline(admin.TabularInline):
     extra         = 0
 
 
+@admin.register(models.TeamIdentity)
+class TeamIdentityAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.PersonIdentity)
+class PersonIdentityAdmin(admin.ModelAdmin):
+    pass
+
+
 @admin.register(models.Team)
 class TeamAdmin(tournament_specific.ModelAdmin):
     form          = TeamForm
@@ -205,11 +215,6 @@ class CommonOriginAdmin(admin.ModelAdmin):
 @admin.register(models.Room)
 class RoomAdmin(tournament_specific.ModelAdmin):
     pass
-
-
-@admin.register(models.LeaderToJuror)
-class LeaderToJurorAdmin(tournament_specific.ModelAdmin):
-    foreignkey_filtered_fields = ["leader", "juror"]
 
 # ---
 
