@@ -1,0 +1,7 @@
+{% extends 'scifight/base.html' %}
+{% load scifight_url %}
+
+{% block content %}
+    <h1>{{ juror.full_name }} ({{ juror.short_name}})</h1>
+    <p>{{ juror.origin }}</p>
+{% endblock %}

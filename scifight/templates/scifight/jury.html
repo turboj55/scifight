@@ -2,6 +2,9 @@
 {% load scifight_url %}
 
 {% block content %}
-    <h1>{{ jury.full_name }} ({{ jury.short_name}})</h1>
-    <p>{{ jury.origin }}</p>
+    {% for juror in jury %}
+        <p><a href="{{ juror | scifight_url }}">{{ juror.full_name }} ({{ juror.short_name }})</a></p>
+        <p>{{ juror.origin }}</p>
+        <hr/>
+    {% endfor %}
 {% endblock %}

@@ -15,8 +15,8 @@ tournament_urls = [
     url(r'^participant/(?P<participant_id>[0-9]+)/$',    views.participant,  name='participant'),
     url(r'^leaders/$',                                   views.leaders,      name='leaders'),
     url(r'^leader/(?P<leader_id>[0-9]+)/$',              views.leader,       name='leader'),
-    url(r'^juries/$',                                    views.juries,       name='juries'),
-    url(r'^jury/(?P<jury_id>[0-9]+)/$',                  views.jury,         name='jury'),
+    url(r'^jury/$',                                      views.jury,         name='jury'),
+    url(r'^juror/(?P<jury_id>[0-9]+)/$',                 views.juror,        name='juror'),
     url(r'^problems/$',                                  views.problems,     name='problems'),
     url(r'^problem/(?P<problem_num>[0-9]+)/$',           views.problem,      name='problem'),
 ]
