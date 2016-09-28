@@ -26,10 +26,10 @@
             <a href="{{ fight.team4 | scifight_url }}">{{ fight.team4.name }}</a>
         </p>
     {% endif %}
-    <p>Juries:</p>
+    <p>Jury:</p>
     <ul>
-    {% for jury in juries %}
-        <li><a href="{{ jury | scifight_url }}">{{ jury.full_name }}</a></li>
+    {% for juror in jury %}
+        <li><a href="{{ juror | scifight_url }}">{{ juror.full_name }}</a></li>
     {% endfor %}
     </ul>
     <hr>

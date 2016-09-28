@@ -24,10 +24,10 @@ def schedule(request, tournament_slug):
 def fight(request, tournament_slug, fight_id):
     fight = get_object_or_404(models.Fight, pk=fight_id,
                               tournament__slug=tournament_slug)
-    juries = fight.juries.all()
+    jury = fight.jury.all()
     fightstages = fight.fightstage_set.all()
     context = dict(fight=fight,
-                   juries=juries,
+                   jury=jury,
                    fightstages=fightstages)
     return render(request, 'scifight/fight.html', context)
 
@@ -98,17 +98,17 @@ def leader(request, tournament_slug, leader_id):
     return render(request, 'scifight/leader.html', contex)
 
 
-def juries(request, tournament_slug):
-    juries = models.Jury.objects.filter(tournament__slug=tournament_slug)
-    context = dict(juries=juries)
-    return render(request, 'scifight/juries.html', context)
-
-
-def jury(request, tournament_slug, jury_id):
-    jury = get_object_or_404(models.Jury, pk=jury_id,
-                             tournament__slug=tournament_slug)
+def jury(request, tournament_slug):
+    jury = models.Juror.objects.filter(tournament__slug=tournament_slug)
     context = dict(jury=jury)
     return render(request, 'scifight/jury.html', context)
+
+
+def juror(request, tournament_slug, jury_id):
+    juror = get_object_or_404(models.Juror, pk=jury_id,
+                             tournament__slug=tournament_slug)
+    context = dict(juror=juror)
+    return render(request, 'scifight/juror.html', context)
 
 
 def problems(request, tournament_slug):

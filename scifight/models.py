@@ -115,7 +115,7 @@ class Leader(models.Model):
         return self.short_name
 
 
-class Jury(models.Model):
+class Juror(models.Model):
     tournament    = models.ForeignKey(Tournament)
     short_name    = models.CharField(max_length=NAME_LENGTH)
     full_name     = models.CharField(max_length=NAME_LENGTH, blank=True)
@@ -170,7 +170,7 @@ class Fight(models.Model):
                                             null=True, blank=True)
     team4         = models.ForeignKey(Team, related_name="team4",
                                             null=True, blank=True)
-    juries        = models.ManyToManyField(Jury, blank=True)
+    jury          = models.ManyToManyField(Juror, blank=True)
 
     def clean(self):
         super().clean()
@@ -243,10 +243,10 @@ class Refusal(models.Model):
         unique_together = ("fight_stage", "problem")
 
 
-class JuryPoints(models.Model):
+class JurorPoints(models.Model):
     tournament    = models.ForeignKey(Tournament)
     fight_stage   = models.ForeignKey(FightStage)
-    jury          = models.ForeignKey(Jury)
+    juror         = models.ForeignKey(Juror)
     reporter_mark = models.IntegerField(null=True, blank=True)
     opponent_mark = models.IntegerField(null=True, blank=True)
     reviewer_mark = models.IntegerField(null=True, blank=True)
@@ -265,23 +265,23 @@ class JuryPoints(models.Model):
                       "reviewing team in this fight"
                 raise exceptions.ValidationError({"reviewer_mark": msg })
 
-        if "jury" not in exclude:
-            juries_set = set(self.fight_stage.fight.juries.all())
-            if self.jury not in juries_set:
-                msg = "Selected jury doesn't take part in the fight"
-                raise exceptions.ValidationError({"jury": msg })
+        if "juror" not in exclude:
+            jury_set = set(self.fight_stage.fight.jury.all())
+            if self.juror not in jury_set:
+                msg = "Selected juror doesn't take part in the fight"
+                raise exceptions.ValidationError({"juror": msg })
 
     class Meta:
-        unique_together = ("fight_stage", "jury")
+        unique_together = ("fight_stage", "juror")
 
 
-class LeaderToJury(models.Model):
+class LeaderToJuror(models.Model):
     tournament    = models.ForeignKey(Tournament)
     leader        = models.ForeignKey(Leader)
-    jury          = models.ForeignKey(Jury)
+    juror         = models.ForeignKey(Juror)
 
     def __str__(self):
-        return "{0} -> {1}".format(self.leader, self.jury)
+        return "{0} -> {1}".format(self.leader, self.juror)
 
     class Meta:
-        unique_together = ("leader", "jury")
+        unique_together = ("leader", "juror")

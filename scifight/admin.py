@@ -51,14 +51,14 @@ class RefusalInline(tournament_specific.InlineMixin, admin.TabularInline):
     extra         = 0
 
 
-class JuryPointsInline(tournament_specific.InlineMixin, admin.TabularInline):
-    model         = models.JuryPoints
+class JurorPointsInline(tournament_specific.InlineMixin, admin.TabularInline):
+    model         = models.JurorPoints
     exclude       = ["tournament"]
     extra         = 0
 
 
-class JuryInline(admin.TabularInline):
-    model         = models.Fight.juries.through
+class JurorInline(admin.TabularInline):
+    model         = models.Fight.jury.through
     extra         = 0
 
 
@@ -83,8 +83,8 @@ class ProblemAdmin(tournament_specific.ModelAdmin):
 
 @admin.register(models.Fight)
 class FightAdmin(tournament_specific.ModelAdmin):
-    inlines       = [JuryInline]
-    exclude       = ["juries"]
+    inlines       = [JurorInline]
+    exclude       = ["jury"]
     ordering      = ["fight_num", "room"]
     list_display  = ["fight_num", "room", "team1", "team2", "team3", "team4"]
     list_display_links \
@@ -98,7 +98,7 @@ class FightAdmin(tournament_specific.ModelAdmin):
 
 @admin.register(models.FightStage)
 class FightStageAdmin(tournament_specific.ModelAdmin):
-    inlines       = [RefusalInline, JuryPointsInline]
+    inlines       = [RefusalInline, JurorPointsInline]
     ordering      = ["fight__fight_num", "fight__room", "action_num"]
     list_display  = ["_fight_number", "_fight_room", "_action_num",
                      "_team1", "_team2", "_team3"]
@@ -162,8 +162,8 @@ class LeaderAdmin(tournament_specific.ModelAdmin):
     _team_name.admin_order_field = 'team__name'
 
 
-@admin.register(models.Jury)
-class JuryAdmin(tournament_specific.ModelAdmin):
+@admin.register(models.Juror)
+class JurorAdmin(tournament_specific.ModelAdmin):
     ordering      = ['full_name']
     list_display  = ['full_name', 'short_name', '_origin_name', 'tournament']
     list_display_links = ['full_name', 'short_name', 'tournament']
@@ -207,9 +207,9 @@ class RoomAdmin(tournament_specific.ModelAdmin):
     pass
 
 
-@admin.register(models.LeaderToJury)
-class LeaderToJuryAdmin(tournament_specific.ModelAdmin):
-    foreignkey_filtered_fields = ["leader", "jury"]
+@admin.register(models.LeaderToJuror)
+class LeaderToJurorAdmin(tournament_specific.ModelAdmin):
+    foreignkey_filtered_fields = ["leader", "juror"]
 
 # ---
 

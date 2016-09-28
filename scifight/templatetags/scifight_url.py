@@ -11,7 +11,7 @@ _single_arg_views = {
 #   Model type           View name                 Field to pass as arg
     models.Participant: ("scifight:participant",   'id'),
     models.Leader:      ("scifight:leader",        'id'),
-    models.Jury:        ("scifight:jury",          'id'),
+    models.Juror:       ("scifight:juror",         'id'),
     models.Room:        ("scifight:room",          'id'),
     models.Fight:       ("scifight:fight",         'id'),
     models.Problem:     ("scifight:problem",       'problem_num')
