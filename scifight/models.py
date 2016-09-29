@@ -186,6 +186,19 @@ class Problem(models.Model):
         return "#{0}. {1}".format(self.problem_num, self.name)
 
 
+class TournamentRound(models.Model):
+    tournament    = models.ForeignKey(Tournament)
+    ordinal_num   = models.SmallIntegerField()
+    opening_time  = models.DateTimeField()
+    closing_time  = models.DateTimeField()
+
+    def __str__(self):
+        return str(self.ordinal_num)
+
+    class Meta:
+        ordering = ["ordinal_num"]
+
+
 class Fight(models.Model):
 
     # Python lacks proper enums and constants, so use these static
@@ -201,8 +214,8 @@ class Fight(models.Model):
     ]
 
     tournament    = models.ForeignKey(Tournament)
+    round         = models.ForeignKey(TournamentRound)
     room          = models.ForeignKey(Room)
-    fight_num     = models.IntegerField()
     start_time    = models.DateTimeField(null=True, blank=True)
     stop_time     = models.DateTimeField(null=True, blank=True)
     status        = models.PositiveSmallIntegerField(choices=_STATUS_CHOICES,
@@ -243,10 +256,11 @@ class Fight(models.Model):
             raise exceptions.ValidationError(msg)
 
     def __str__(self):
-        return "Fight {0} at {1}".format(self.fight_num, self.room.name)
+        return "{0} at {1}".format(self.round, self.room)
 
     class Meta:
-        unique_together = ("room", "fight_num")
+        unique_together = ("room", "round")
+        ordering  = ["round", "room"]
 
 
 class FightStage(models.Model):
