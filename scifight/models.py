@@ -42,7 +42,7 @@ class PersonIdentity(models.Model):
 
     def __str__(self):
 
-        def get_most_recent(objs):
+        def get_most_recent(objs: models.manager.Manager):
             return objs.order_by("-tournament__closing_date").first()
 
         latest_juror       = get_most_recent(self.jury)
@@ -315,13 +315,13 @@ class JurorPoints(models.Model):
             if bad:
                 msg = "Reviewer mark must be set, because there is a " \
                       "reviewing team in this fight"
-                raise exceptions.ValidationError({"reviewer_mark": msg })
+                raise exceptions.ValidationError({"reviewer_mark": msg})
 
         if "juror" not in exclude:
             jury_set = set(self.fight_stage.fight.jury.all())
             if self.juror not in jury_set:
                 msg = "Selected juror doesn't take part in the fight"
-                raise exceptions.ValidationError({"juror": msg })
+                raise exceptions.ValidationError({"juror": msg})
 
     class Meta:
         unique_together = ("fight_stage", "juror")
