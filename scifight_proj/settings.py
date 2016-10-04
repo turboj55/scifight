@@ -114,7 +114,7 @@ ADMIN_REORDER = ('sites',
              'scifight.Problem',
              'scifight.Juror',
              'scifight.TeamOrigin',
-             'scifight.CommonOrigin']),
+             'scifight.PersonOrigin']),
 
     dict(app='scifight',
          label='Tournament progress',

@@ -71,7 +71,7 @@ class TeamOrigin(models.Model):
         verbose_name = "Team origin"
 
 
-class CommonOrigin(models.Model):
+class PersonOrigin(models.Model):
     place_name    = models.CharField(max_length=NAME_LENGTH)
 
     def __str__(self):
@@ -125,7 +125,7 @@ class Participant(models.Model):
                                       related_name="participants")
     short_name    = models.CharField(max_length=NAME_LENGTH)
     full_name     = models.CharField(max_length=NAME_LENGTH)
-    origin        = models.ForeignKey(CommonOrigin, null=True, blank=True)
+    origin        = models.ForeignKey(PersonOrigin, null=True, blank=True)
     grade         = models.CharField(max_length=GRADE_LENGTH, blank=True)
     team          = models.ForeignKey(Team)
     is_captain    = models.BooleanField()
@@ -142,7 +142,7 @@ class Leader(models.Model):
     identity      = models.ForeignKey(PersonIdentity, related_name="leaders")
     short_name    = models.CharField(max_length=NAME_LENGTH)
     full_name     = models.CharField(max_length=NAME_LENGTH)
-    origin        = models.ForeignKey(CommonOrigin, null=True, blank=True)
+    origin        = models.ForeignKey(PersonOrigin, null=True, blank=True)
     team          = models.ForeignKey(Team)
 
     def fill_tournament(self):
@@ -157,7 +157,7 @@ class Juror(models.Model):
     identity      = models.ForeignKey(PersonIdentity, related_name="jury")
     short_name    = models.CharField(max_length=NAME_LENGTH)
     full_name     = models.CharField(max_length=NAME_LENGTH)
-    origin        = models.ForeignKey(CommonOrigin, null=True, blank=True)
+    origin        = models.ForeignKey(PersonOrigin, null=True, blank=True)
 
     def __str__(self):
         return self.short_name

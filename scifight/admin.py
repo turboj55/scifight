@@ -211,7 +211,7 @@ class TournamentAdmin(admin.ModelAdmin):
         return qs
 
 
-@admin.register(models.CommonOrigin)
+@admin.register(models.PersonOrigin)
 class CommonOriginAdmin(admin.ModelAdmin):
     pass
 
