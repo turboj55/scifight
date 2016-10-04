@@ -83,9 +83,9 @@ class TeamAdmin(tournament_specific.ModelAdmin):
 @admin.register(models.Problem)
 class ProblemAdmin(tournament_specific.ModelAdmin):
     ordering      = ["problem_num"]
-    list_display  = ["problem_num", "name", '_get_short_description']
+    list_display  = ["problem_num", "title", '_get_short_description']
     list_display_links \
-                  = ["problem_num", "name", '_get_short_description']
+                  = ["problem_num", "title", '_get_short_description']
 
     def _get_short_description(self, model):
         return utils.shorten_text(model.description, maxchars=90)

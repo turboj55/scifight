@@ -62,20 +62,20 @@ class PersonIdentity(models.Model):
 
 
 class TeamOrigin(models.Model):
-    name          = models.CharField(max_length=NAME_LENGTH)
+    place_name    = models.CharField(max_length=NAME_LENGTH)
 
     def __str__(self):
-        return self.name
+        return self.place_name
 
     class Meta:
         verbose_name = "Team origin"
 
 
 class CommonOrigin(models.Model):
-    name          = models.CharField(max_length=NAME_LENGTH)
+    place_name    = models.CharField(max_length=NAME_LENGTH)
 
     def __str__(self):
-        return self.name
+        return self.place_name
 
 
 class Tournament(models.Model):
@@ -165,20 +165,20 @@ class Juror(models.Model):
 
 class Room(models.Model):
     tournament    = models.ForeignKey(Tournament)
-    name          = models.CharField(max_length=NAME_LENGTH)
+    designation   = models.CharField(max_length=NAME_LENGTH)
 
     def __str__(self):
-        return self.name
+        return self.designation
 
 
 class Problem(models.Model):
     tournament    = models.ForeignKey(Tournament)
     problem_num   = models.IntegerField(primary_key=True)
-    name          = models.CharField(max_length=NAME_LENGTH)
+    title         = models.CharField(max_length=NAME_LENGTH)
     description   = models.TextField(max_length=TEXT_LENGTH, blank=True)
 
     def __str__(self):
-        return "#{0}. {1}".format(self.problem_num, self.name)
+        return "#{0}. {1}".format(self.problem_num, self.title)
 
 
 class TournamentRound(models.Model):
@@ -280,7 +280,7 @@ class FightStage(models.Model):
 
     def __str__(self):
         return 'Fight #{0}, stage #{1} at {2}'.format(
-            self.fight.fight_num, self.action_num, self.fight.room.name)
+            self.fight.fight_num, self.action_num, self.fight.room.designation)
 
     class Meta:
         unique_together = ("fight", "action_num")

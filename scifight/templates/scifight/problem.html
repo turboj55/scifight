@@ -2,7 +2,7 @@
 {% load scifight_url %}
 
 {% block content %}
-    <h1>{{ problem.name }}</h1>
+    <h1>{{ problem.title }}</h1>
     <ul>
         {% for fightstage in problem.fightstage_set.all %}
             <li>

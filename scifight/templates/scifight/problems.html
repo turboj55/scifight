@@ -3,7 +3,7 @@
 
 {% block content %}
     {% for problem in problems %}
-        <h1><a href="{{ problem | scifight_url }}">{{ problem.name }}</a></h1>
+        <h1><a href="{{ problem | scifight_url }}">{{ problem.title }}</a></h1>
         <p>{{ problem.description }}</p>
         <hr/>
     {% endfor %}
