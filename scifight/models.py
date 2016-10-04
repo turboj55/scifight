@@ -61,6 +61,23 @@ class PersonIdentity(models.Model):
                                         latest_avatar.tournament.short_name)
 
 
+class TeamOrigin(models.Model):
+    name          = models.CharField(max_length=NAME_LENGTH)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Team origin"
+
+
+class CommonOrigin(models.Model):
+    name          = models.CharField(max_length=NAME_LENGTH)
+
+    def __str__(self):
+        return self.name
+
+
 class Tournament(models.Model):
     full_name     = models.CharField(max_length=NAME_LENGTH)
     short_name    = models.CharField(max_length=NAME_LENGTH)
@@ -71,16 +88,6 @@ class Tournament(models.Model):
 
     def __str__(self):
         return self.short_name
-
-
-class TeamOrigin(models.Model):
-    name          = models.CharField(max_length=NAME_LENGTH)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = "Team origin"
 
 
 class Team(models.Model):
@@ -110,13 +117,6 @@ class Team(models.Model):
 
     class Meta:
         unique_together = ('tournament', 'slug')
-
-
-class CommonOrigin(models.Model):
-    name          = models.CharField(max_length=NAME_LENGTH)
-
-    def __str__(self):
-        return self.name
 
 
 class Participant(models.Model):
