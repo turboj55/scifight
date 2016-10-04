@@ -23,11 +23,6 @@ GRADE_LENGTH = 20
     hold a number plus possible brief one-word explanation. """
 
 
-class UserProfile(models.Model):
-    user          = models.OneToOneField(User, related_name='scifight_extra')
-    tournament    = models.ForeignKey('Tournament', blank=True, null=True)
-
-
 class TeamIdentity(models.Model):
 
     def __str__(self):
@@ -330,3 +325,10 @@ class JurorPoints(models.Model):
 
     class Meta:
         unique_together = ("fight_stage", "juror")
+
+# ---
+
+
+class UserProfile(models.Model):
+    user          = models.OneToOneField(User, related_name='scifight_extra')
+    tournament    = models.ForeignKey('Tournament', blank=True, null=True)
