@@ -62,6 +62,16 @@ class JurorInline(admin.TabularInline):
     extra         = 0
 
 
+@admin.register(models.TeamIdentity)
+class TeamIdentityAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.PersonIdentity)
+class PersonIdentityAdmin(admin.ModelAdmin):
+    pass
+
+
 @admin.register(models.Team)
 class TeamAdmin(tournament_specific.ModelAdmin):
     form          = TeamForm
@@ -81,14 +91,21 @@ class ProblemAdmin(tournament_specific.ModelAdmin):
         return utils.shorten_text(model.description, maxchars=90)
 
 
+@admin.register(models.TournamentRound)
+class TournamentRoundAdmin(tournament_specific.ModelAdmin):
+    ordering      = ["ordinal_num"]
+    list_display  = ["ordinal_num", "opening_time", "closing_time"]
+
+
 @admin.register(models.Fight)
 class FightAdmin(tournament_specific.ModelAdmin):
     inlines       = [JurorInline]
     exclude       = ["jury"]
-    ordering      = ["fight_num", "room"]
-    list_display  = ["fight_num", "room", "team1", "team2", "team3", "team4"]
+    ordering      = ["round", "room"]
+    list_display  = ["round", "room",
+                     "team1", "team2", "team3", "team4"]
     list_display_links \
-                  = ["fight_num", "room"]
+                  = ["round", "room"]
     list_select_related \
                   = ["room", "team1", "team2", "team3", "team4"]
     foreignkey_filtered_fields \
@@ -99,8 +116,8 @@ class FightAdmin(tournament_specific.ModelAdmin):
 @admin.register(models.FightStage)
 class FightStageAdmin(tournament_specific.ModelAdmin):
     inlines       = [RefusalInline, JurorPointsInline]
-    ordering      = ["fight__fight_num", "fight__room", "action_num"]
-    list_display  = ["_fight_number", "_fight_room", "_action_num",
+    ordering      = ["fight__round", "fight__room", "action_num"]
+    list_display  = ["fight", "_fight_room", "_action_num",
                      "_team1", "_team2", "_team3"]
     list_select_related = ["fight"]
 
@@ -114,9 +131,6 @@ class FightStageAdmin(tournament_specific.ModelAdmin):
     # buttons for interactive sorting. I don't like them here.
     def _action_num(self, model):
         return model.action_num
-
-    def _fight_number(self, model):
-        return model.fight.fight_num
 
     def _fight_room(self, model):
         return model.fight.room
@@ -205,11 +219,6 @@ class CommonOriginAdmin(admin.ModelAdmin):
 @admin.register(models.Room)
 class RoomAdmin(tournament_specific.ModelAdmin):
     pass
-
-
-@admin.register(models.LeaderToJuror)
-class LeaderToJurorAdmin(tournament_specific.ModelAdmin):
-    foreignkey_filtered_fields = ["leader", "juror"]
 
 # ---
 

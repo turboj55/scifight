@@ -28,6 +28,44 @@ class UserProfile(models.Model):
     tournament    = models.ForeignKey('Tournament', blank=True, null=True)
 
 
+class TeamIdentity(models.Model):
+
+    def __str__(self):
+        # For people to be able to guess where *exactly* they may have seen
+        # this team before, show it's latest known name and tournament it
+        # participated in.
+        latest_team = self.teams.order_by("-tournament__closing_date").first()
+        if latest_team:
+            return "TID#{0}: «{1}» on {2}".format(self.pk,
+                                              latest_team.name,
+                                              latest_team.tournament.short_name)
+        else:
+            return "TID#{0}".format(self.pk)
+
+
+class PersonIdentity(models.Model):
+
+    def __str__(self):
+
+        def get_most_recent(objs):
+            return objs.order_by("-tournament__closing_date").first()
+
+        latest_juror       = get_most_recent(self.jury)
+        latest_leader      = get_most_recent(self.leaders)
+        latest_participant = get_most_recent(self.participants)
+
+        avatars = {latest_juror, latest_leader, latest_participant}
+        avatars.remove(None)
+
+        if not avatars:
+            return "HID#{0}".format(self.pk)
+
+        latest_avatar = max(avatars, key=lambda a: a.tournament.closing_date)
+        return "HID#{0}: {1} on {2}".format(self.pk,
+                                        latest_avatar.short_name,
+                                        latest_avatar.tournament.short_name)
+
+
 class Tournament(models.Model):
     full_name     = models.CharField(max_length=NAME_LENGTH)
     short_name    = models.CharField(max_length=NAME_LENGTH)
@@ -52,6 +90,7 @@ class TeamOrigin(models.Model):
 
 class Team(models.Model):
     tournament    = models.ForeignKey(Tournament)
+    identity      = models.ForeignKey(TeamIdentity, related_name="teams")
     name          = models.CharField(max_length=NAME_LENGTH)
     slug          = models.SlugField(max_length=SLUG_LENGTH,
                                      null=True, blank=True)
@@ -87,6 +126,8 @@ class CommonOrigin(models.Model):
 
 class Participant(models.Model):
     tournament    = models.ForeignKey(Tournament)
+    identity      = models.ForeignKey(PersonIdentity,
+                                      related_name="participants")
     short_name    = models.CharField(max_length=NAME_LENGTH)
     full_name     = models.CharField(max_length=NAME_LENGTH)
     origin        = models.ForeignKey(CommonOrigin, null=True, blank=True)
@@ -103,6 +144,7 @@ class Participant(models.Model):
 
 class Leader(models.Model):
     tournament    = models.ForeignKey(Tournament)
+    identity      = models.ForeignKey(PersonIdentity, related_name="leaders")
     short_name    = models.CharField(max_length=NAME_LENGTH)
     full_name     = models.CharField(max_length=NAME_LENGTH)
     origin        = models.ForeignKey(CommonOrigin, null=True, blank=True)
@@ -117,6 +159,7 @@ class Leader(models.Model):
 
 class Juror(models.Model):
     tournament    = models.ForeignKey(Tournament)
+    identity      = models.ForeignKey(PersonIdentity, related_name="jury")
     short_name    = models.CharField(max_length=NAME_LENGTH)
     full_name     = models.CharField(max_length=NAME_LENGTH)
     origin        = models.ForeignKey(CommonOrigin, null=True, blank=True)
@@ -143,6 +186,19 @@ class Problem(models.Model):
         return "#{0}. {1}".format(self.problem_num, self.name)
 
 
+class TournamentRound(models.Model):
+    tournament    = models.ForeignKey(Tournament)
+    ordinal_num   = models.SmallIntegerField()
+    opening_time  = models.DateTimeField()
+    closing_time  = models.DateTimeField()
+
+    def __str__(self):
+        return str(self.ordinal_num)
+
+    class Meta:
+        ordering = ["ordinal_num"]
+
+
 class Fight(models.Model):
 
     # Python lacks proper enums and constants, so use these static
@@ -158,8 +214,8 @@ class Fight(models.Model):
     ]
 
     tournament    = models.ForeignKey(Tournament)
+    round         = models.ForeignKey(TournamentRound)
     room          = models.ForeignKey(Room)
-    fight_num     = models.IntegerField()
     start_time    = models.DateTimeField(null=True, blank=True)
     stop_time     = models.DateTimeField(null=True, blank=True)
     status        = models.PositiveSmallIntegerField(choices=_STATUS_CHOICES,
@@ -200,10 +256,11 @@ class Fight(models.Model):
             raise exceptions.ValidationError(msg)
 
     def __str__(self):
-        return "Fight {0} at {1}".format(self.fight_num, self.room.name)
+        return "{0} at {1}".format(self.round, self.room)
 
     class Meta:
-        unique_together = ("room", "fight_num")
+        unique_together = ("room", "round")
+        ordering  = ["round", "room"]
 
 
 class FightStage(models.Model):
@@ -273,15 +330,3 @@ class JurorPoints(models.Model):
 
     class Meta:
         unique_together = ("fight_stage", "juror")
-
-
-class LeaderToJuror(models.Model):
-    tournament    = models.ForeignKey(Tournament)
-    leader        = models.ForeignKey(Leader)
-    juror         = models.ForeignKey(Juror)
-
-    def __str__(self):
-        return "{0} -> {1}".format(self.leader, self.juror)
-
-    class Meta:
-        unique_together = ("leader", "juror")
