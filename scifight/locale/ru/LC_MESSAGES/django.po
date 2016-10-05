@@ -1,0 +1,100 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-05 17:23+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
+"%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#: scifight/models.py:35
+#, python-brace-format
+msgid "TID#{0}: «{1}» on {2}"
+msgstr ""
+
+#: scifight/models.py:39
+#, python-brace-format
+msgid "TID#{0}"
+msgstr ""
+
+#: scifight/models.py:57
+#, python-brace-format
+msgid "HID#{0}"
+msgstr ""
+
+#: scifight/models.py:60
+#, python-brace-format
+msgid "HID#{0}: {1} on {2}"
+msgstr ""
+
+#: scifight/models.py:72
+msgid "Team origin"
+msgstr ""
+
+#: scifight/models.py:73
+msgid "Team origins"
+msgstr ""
+
+#: scifight/models.py:183
+#, python-brace-format
+msgid "#{0}. {1}"
+msgstr ""
+
+#: scifight/models.py:208
+msgid "Not started"
+msgstr ""
+
+#: scifight/models.py:209
+msgid "In progress"
+msgstr ""
+
+#: scifight/models.py:210
+msgid "Completed"
+msgstr ""
+
+#: scifight/models.py:234
+msgid "Fight is completed before being started"
+msgstr ""
+
+#: scifight/models.py:238
+msgid "Team 3 must be given when team 4 is given"
+msgstr ""
+
+#: scifight/models.py:246
+msgid "Participating teams are not unique"
+msgstr ""
+
+#: scifight/models.py:251
+msgid "Teams belong to different tournaments!"
+msgstr ""
+
+#: scifight/models.py:255
+#, python-brace-format
+msgid "{0} at {1}"
+msgstr ""
+
+#: scifight/models.py:279
+msgid "Single person is assigned for two or more roles"
+msgstr ""
+
+#: scifight/models.py:317
+msgid ""
+"Reviewer mark must be set, because there is a reviewing team in this fight"
+msgstr ""
+
+#: scifight/models.py:324
+msgid "Selected juror doesn't take part in the fight"
+msgstr ""
