@@ -2,6 +2,7 @@ from django.db   import models
 from django.core import exceptions
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.utils.translation   import ugettext as tr
 
 SLUG_LENGTH = 20
 """ Maximum length of slug fields. This value must be large enough to hold
@@ -31,11 +32,11 @@ class TeamIdentity(models.Model):
         # participated in.
         latest_team = self.teams.order_by("-tournament__closing_date").first()
         if latest_team:
-            return "TID#{0}: «{1}» on {2}".format(self.pk,
-                                              latest_team.name,
-                                              latest_team.tournament.short_name)
+            return tr("TID#{0}: «{1}» on {2}").format(self.pk,
+                                             latest_team.name,
+                                             latest_team.tournament.short_name)
         else:
-            return "TID#{0}".format(self.pk)
+            return tr("TID#{0}").format(self.pk)
 
 
 class PersonIdentity(models.Model):
@@ -53,10 +54,10 @@ class PersonIdentity(models.Model):
         avatars.remove(None)
 
         if not avatars:
-            return "HID#{0}".format(self.pk)
+            return tr("HID#{0}").format(self.pk)
 
         latest_avatar = max(avatars, key=lambda a: a.tournament.closing_date)
-        return "HID#{0}: {1} on {2}".format(self.pk,
+        return tr("HID#{0}: {1} on {2}").format(self.pk,
                                         latest_avatar.short_name,
                                         latest_avatar.tournament.short_name)
 
@@ -68,7 +69,8 @@ class TeamOrigin(models.Model):
         return self.place_name
 
     class Meta:
-        verbose_name = "Team origin"
+        verbose_name        = tr("Team origin")
+        verbose_name_plural = tr("Team origins")
 
 
 class PersonOrigin(models.Model):
@@ -178,7 +180,7 @@ class Problem(models.Model):
     description   = models.TextField(max_length=TEXT_LENGTH, blank=True)
 
     def __str__(self):
-        return "#{0}. {1}".format(self.problem_num, self.title)
+        return tr("#{0}. {1}").format(self.problem_num, self.title)
 
 
 class TournamentRound(models.Model):
@@ -203,10 +205,9 @@ class Fight(models.Model):
     COMPLETED   = 2
 
     _STATUS_CHOICES = [
-        (NOT_STARTED, "Not started"),
-        (IN_PROGRESS, "In progress"),
-        (COMPLETED,   "Completed")
-    ]
+        (NOT_STARTED, tr("Not started")),
+        (IN_PROGRESS, tr("In progress")),
+        (COMPLETED,   tr("Completed"))]
 
     tournament    = models.ForeignKey(Tournament)
     round         = models.ForeignKey(TournamentRound)
@@ -230,11 +231,11 @@ class Fight(models.Model):
                self.stop_time  is not None and
                self.start_time >= self.stop_time)
         if bad:
-            msg = "Fight is completed before being started"
+            msg = tr("Fight is completed before being started")
             raise exceptions.ValidationError({"stop_time": msg})
 
         if self.team3 is None and self.team4 is not None:
-            msg = "Team 3 must be given when team 4 is given"
+            msg = tr("Team 3 must be given when team 4 is given")
             raise exceptions.ValidationError({"team3": msg})
 
         teams = [self.team1, self.team2, self.team3, self.team4]
@@ -242,12 +243,12 @@ class Fight(models.Model):
 
         # noinspection PyTypeChecker
         if len(teams_uniq) < 2 or len(teams_uniq) + teams.count(None) != 4:
-            msg = "Participating teams are not unique"
+            msg = tr("Participating teams are not unique")
             raise exceptions.ValidationError(msg)
 
         tournaments_of_team = set([team.tournament for team in teams_uniq])
         if len(tournaments_of_team) > 1:
-            msg = 'Teams belong to different tournaments!'
+            msg = tr('Teams belong to different tournaments!')
             raise exceptions.ValidationError(msg)
 
     def __str__(self):
@@ -275,7 +276,7 @@ class FightStage(models.Model):
 
         # noinspection PyTypeChecker
         if len(guys_uniq) < 2 or len(guys_uniq) + guys.count(None) != 3:
-            msg = "Single person is assigned for two or more roles"
+            msg = tr("Single person is assigned for two or more roles")
             raise exceptions.ValidationError(msg)
 
     def __str__(self):
@@ -313,14 +314,14 @@ class JurorPoints(models.Model):
             bad = (self.reviewer_mark is None and
                    self.fight_stage.fight.team3 is not None)
             if bad:
-                msg = "Reviewer mark must be set, because there is a " \
-                      "reviewing team in this fight"
+                msg = tr("Reviewer mark must be set, because there is "
+                         "a reviewing team in this fight")
                 raise exceptions.ValidationError({"reviewer_mark": msg})
 
         if "juror" not in exclude:
             jury_set = set(self.fight_stage.fight.jury.all())
             if self.juror not in jury_set:
-                msg = "Selected juror doesn't take part in the fight"
+                msg = tr("Selected juror doesn't take part in the fight")
                 raise exceptions.ValidationError({"juror": msg})
 
     class Meta:
