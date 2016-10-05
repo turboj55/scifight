@@ -43,6 +43,7 @@ class PersonIdentity(models.Model):
 
     def __str__(self):
 
+        # Shorthand function. Will return 'None' if nothing is found.
         def get_most_recent(objs: models.manager.Manager):
             return objs.order_by("-tournament__closing_date").first()
 
