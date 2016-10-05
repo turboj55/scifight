@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 import logging
-from .settings_secret import *
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -118,3 +117,11 @@ ADMIN_REORDER = ('sites',
          models=[
              'auth.User',
              'auth.Group']))
+
+# === Override default settings with local-specific ones ===
+
+from .settings_secret import *
+
+# These lines are here just to suppress PyCharm's "unused import" warning.
+assert SECRET_KEY
+assert DATABASES
