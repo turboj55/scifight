@@ -14,12 +14,11 @@ import os
 import logging
 from .settings_secret import *
 
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 LOG_PATH = os.path.join(BASE_DIR, 'scifight.log')
-logging.basicConfig(format=u'%(filename)s[LINE:%(lineno)d]# '
-                           u'%(levelname)-8s [%(asctime)s]  %(message)s',
+logging.basicConfig(format='%(filename)s[LINE:%(lineno)d]# '
+                           '%(levelname)-8s [%(asctime)s]  %(message)s',
                     level=logging.DEBUG,
                     filename=LOG_PATH)
 
@@ -70,21 +69,11 @@ TEMPLATES = [
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
+AUTH_PASSWORD_VALIDATORS = [{"NAME": validator} for validator in [
+    'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    'django.contrib.auth.password_validation.MinimumLengthValidator',
+    'django.contrib.auth.password_validation.CommonPasswordValidator',
+    'django.contrib.auth.password_validation.NumericPasswordValidator']]
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
@@ -100,6 +89,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_files')
+
+# === Settings for 'admin-reorder' extension ===
 
 ADMIN_REORDER = ('sites',
     dict(app='scifight',
