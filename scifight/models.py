@@ -215,11 +215,11 @@ class Fight(models.Model):
     stop_time     = models.DateTimeField(null=True, blank=True)
     status        = models.PositiveSmallIntegerField(choices=_STATUS_CHOICES,
                                                      default=NOT_STARTED)
-    team1         = models.ForeignKey(Team, related_name="team1")
-    team2         = models.ForeignKey(Team, related_name="team2")
-    team3         = models.ForeignKey(Team, related_name="team3",
+    team1         = models.ForeignKey(Team, related_name="+")
+    team2         = models.ForeignKey(Team, related_name="+")
+    team3         = models.ForeignKey(Team, related_name="+",
                                             null=True, blank=True)
-    team4         = models.ForeignKey(Team, related_name="team4",
+    team4         = models.ForeignKey(Team, related_name="+",
                                             null=True, blank=True)
     jury          = models.ManyToManyField(Juror, blank=True)
 
@@ -262,9 +262,9 @@ class FightStage(models.Model):
     fight         = models.ForeignKey(Fight)
     action_num    = models.IntegerField()
     problem       = models.ForeignKey(Problem)
-    reporter      = models.ForeignKey(Participant, related_name="reporter")
-    opponent      = models.ForeignKey(Participant, related_name="opponent")
-    reviewer      = models.ForeignKey(Participant, related_name="reviewer",
+    reporter      = models.ForeignKey(Participant, related_name="+")
+    opponent      = models.ForeignKey(Participant, related_name="+")
+    reviewer      = models.ForeignKey(Participant, related_name="+",
                                                    null=True, blank=True)
 
     def clean(self):
