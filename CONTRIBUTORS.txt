@@ -1,0 +1,14 @@
+Comprehensive list of project's contributors
+============================================
+
+Alexandra Maslakova (https://twitter.com/_KnopkO_)
+    Author of the original idea, and the main critic of its implementation.
+    She drew an octopus for 404 page.
+
+Nadezhda Dmitrienko
+    Chose the name 'scifight' as reference to 'science fiction'. Also she is
+    the project's mascot, but she isn't particularly happy for that role.
+
+Pavel Kretov (firegurafiku@gmail.com)
+Artyom Matyashov (smart7797@gmail.com)
+    Database and code architecture, as well as actual coding work.
