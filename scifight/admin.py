@@ -1,6 +1,7 @@
 from django.contrib import auth
 from django.contrib import admin
 from django         import forms
+from django.utils.translation import ugettext as _tr
 from scifight       import models
 from scifight       import utils
 from scifight       import tournament_specific
@@ -8,17 +9,21 @@ from scifight       import tournament_specific
 admin.AdminSite.site_header = 'SciFight'
 
 
-class ParticipantForm(forms.ModelForm):
+class PersonForm(forms.ModelForm):
+    identity = forms.ModelChoiceField(
+        queryset    = models.PersonIdentity.objects.all(),
+        empty_label = _tr("--- Create new ---"))
 
     class Meta:
-        model = models.Participant
         exclude = []
 
 
 class TeamForm(forms.ModelForm):
+    identity = forms.ModelChoiceField(
+        queryset    = models.TeamIdentity.objects.all(),
+        empty_label = _tr("--- Create new ---"))
 
     class Meta:
-        model = models.Team
         exclude = []
         widgets = {
             # FIXME: Magic constant!
@@ -28,13 +33,14 @@ class TeamForm(forms.ModelForm):
 
 class ParticipantInline(tournament_specific.InlineMixin, admin.StackedInline):
     model         = models.Participant
-    form          = ParticipantForm
+    form          = PersonForm
     exclude       = ["tournament"]
     ordering      = ["short_name"]
     extra         = 0
 
 
 class LeaderInline(tournament_specific.InlineMixin, admin.StackedInline):
+    form          = PersonForm
     model         = models.Leader
     exclude       = ["tournament"]
     ordering      = ["short_name"]
@@ -151,6 +157,7 @@ class TeamOriginAdmin(admin.ModelAdmin):
 
 @admin.register(models.Participant)
 class ParticipantAdmin(tournament_specific.ModelAdmin):
+    form          = PersonForm
     ordering      = ['full_name']
     list_display  = ['full_name', '_team_name', 'grade', 'is_captain']
     list_select_related = ['team']
@@ -167,6 +174,7 @@ class ParticipantAdmin(tournament_specific.ModelAdmin):
 
 @admin.register(models.Leader)
 class LeaderAdmin(tournament_specific.ModelAdmin):
+    form          = PersonForm
     ordering      = ['full_name']
     list_display  = ['full_name', '_team_name', 'origin']
     list_select_related = ['team']
@@ -183,6 +191,7 @@ class LeaderAdmin(tournament_specific.ModelAdmin):
 
 @admin.register(models.Juror)
 class JurorAdmin(tournament_specific.ModelAdmin):
+    form          = PersonForm
     ordering      = ['full_name']
     list_display  = ['full_name', 'short_name', '_origin_name', 'tournament']
     list_display_links = ['full_name', 'short_name', 'tournament']
