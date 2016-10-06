@@ -13,10 +13,6 @@ class ParticipantForm(forms.ModelForm):
     class Meta:
         model = models.Participant
         exclude = []
-        widgets = {
-            # FIXME: Magic constant!
-            'grade': forms.TextInput(attrs={'size': 5}),
-        }
 
 
 class TeamForm(forms.ModelForm):
@@ -30,7 +26,7 @@ class TeamForm(forms.ModelForm):
         }
 
 
-class ParticipantInline(tournament_specific.InlineMixin, admin.TabularInline):
+class ParticipantInline(tournament_specific.InlineMixin, admin.StackedInline):
     model         = models.Participant
     form          = ParticipantForm
     exclude       = ["tournament"]
@@ -38,7 +34,7 @@ class ParticipantInline(tournament_specific.InlineMixin, admin.TabularInline):
     extra         = 0
 
 
-class LeaderInline(tournament_specific.InlineMixin, admin.TabularInline):
+class LeaderInline(tournament_specific.InlineMixin, admin.StackedInline):
     model         = models.Leader
     exclude       = ["tournament"]
     ordering      = ["short_name"]

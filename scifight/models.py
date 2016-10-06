@@ -95,7 +95,8 @@ class Tournament(models.Model):
 
 class Team(models.Model):
     tournament    = models.ForeignKey(Tournament)
-    identity      = models.ForeignKey(TeamIdentity, related_name="teams")
+    identity      = models.ForeignKey(TeamIdentity,
+                                      related_name="teams", blank=True)
     name          = models.CharField(max_length=NAME_LENGTH)
     slug          = models.SlugField(max_length=SLUG_LENGTH,
                                      null=True, blank=True)
