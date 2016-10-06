@@ -268,17 +268,14 @@ class FightStage(models.Model):
     def clean(self):
         super().clean()
 
-        guys = [self.reporter, self.opponent, self.reviewer]
-        guys_uniq = set(guys) - {None}
-
-        # noinspection PyTypeChecker
-        if len(guys_uniq) < 2 or len(guys_uniq) + guys.count(None) != 3:
+        guys = {self.reporter, self.opponent, self.reviewer} - {None}
+        if len(guys) != (3 if self.reviewer else 2):
             msg = _tr("Single person is assigned for two or more roles")
             raise exceptions.ValidationError(msg)
 
     def __str__(self):
         return 'Fight #{0}, stage #{1} at {2}'.format(
-            self.fight.fight_num, self.action_num, self.fight.room.designation)
+            self.fight.round, self.action_num, self.fight.room.designation)
 
     class Meta:
         unique_together = ("fight", "action_num")
