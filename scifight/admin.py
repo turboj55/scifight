@@ -36,8 +36,8 @@ class ParticipantInline(tournament_specific.InlineMixin, admin.StackedInline):
 
 
 class LeaderInline(tournament_specific.InlineMixin, admin.StackedInline):
-    form          = PersonForm
     model         = models.Leader
+    form          = PersonForm
     exclude       = ["tournament"]
     ordering      = ["short_name"]
     extra         = 0
