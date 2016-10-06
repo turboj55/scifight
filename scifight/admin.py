@@ -79,6 +79,9 @@ class TeamAdmin(tournament_specific.ModelAdmin):
     list_display  = ['name', 'origin', ]
     inlines       = [LeaderInline, ParticipantInline]
 
+    class Media:
+        js = ["scifight/autopopulate.js"]
+
 
 @admin.register(models.Problem)
 class ProblemAdmin(tournament_specific.ModelAdmin):

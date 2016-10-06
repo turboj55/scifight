@@ -13,7 +13,7 @@
        This behavior mimics how BibTeX normalizes and converts names, and may
        give suboptimal results sometimes. */
 
-    var prevFullName = "";
+    var prevFullNames = {};
 
     function convertName(fullName) {
         var match = /^\s*([^,]+?)\s*,\s*(\S+)/.exec(fullName);
@@ -27,16 +27,28 @@
 
     $(window).on("load", function() {
 
-        var $shortName = $('#id_short_name');
-        var $fullName  = $('#id_full_name');
+        $(window).on('focusin', function(event){
+            var match = /^(id_[\w_-]*)full_name/.exec(event.target.id);
+            if (!match)
+                return;
 
-        prevFullName = $shortName.val();
-
-        $fullName.on('focusin', function(){
-            prevFullName = $fullName.val();
+            var midId = match[1];
+            prevFullNames[midId] = $('#'+midId+'full_name').val();
         });
 
-        $fullName.on('change', function(){
+        $(window).on('change', function(event){
+            var match = /^(id_[\w_-]*)full_name/.exec(event.target.id);
+            if (!match)
+                return;
+
+            var midId = match[1];
+            var $fullName    = $('#'+midId+'full_name');
+            var $shortName   = $('#'+midId+'short_name');
+
+            var prevFullName = "";
+            if (prevFullNames[midId])
+                prevFullName = prevFullNames[midId];
+
             var shortName = $shortName.val();
             if (shortName == '' || shortName == convertName(prevFullName)) {
                 var convertedName = convertName($fullName.val());
