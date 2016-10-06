@@ -25,10 +25,6 @@ class TeamForm(forms.ModelForm):
 
     class Meta:
         exclude = []
-        widgets = {
-            # FIXME: Magic constant!
-            'description': forms.Textarea(attrs={'rows':4, 'cols':40}),
-        }
 
 
 class ParticipantInline(tournament_specific.InlineMixin, admin.StackedInline):
