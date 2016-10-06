@@ -102,18 +102,14 @@ class Team(models.Model):
     description   = models.TextField(max_length=TEXT_LENGTH, blank=True)
     origin        = models.ForeignKey(TeamOrigin, null=True, blank=True)
 
-    def clean_fields(self, exclude=None):
-        super().clean_fields(exclude)
-
-        if exclude is None:
-            exclude = []
+    def clean(self):
+        super().clean()
 
         # Force Django to always store SQL NULL for slug instead of an empty
         # string, thus making 'unique_together' work again.
         # NOTE: in SQL NULLs are treated as unique values.
-        if self.slug not in exclude:
-            if self.slug == "":
-                self.slug = None
+        if self.slug == "":
+            self.slug = None
 
     def __str__(self):
         return self.name
@@ -305,25 +301,22 @@ class JurorPoints(models.Model):
     opponent_mark = models.IntegerField(null=True, blank=True)
     reviewer_mark = models.IntegerField(null=True, blank=True)
 
-    def clean_fields(self, exclude=None):
-        super().clean_fields(exclude)
+    def clean(self):
+        super().clean()
 
-        if exclude is None:
-            exclude = []
+        # clean reviewer
+        bad = (self.reviewer_mark is None and
+               self.fight_stage.fight.team3 is not None)
+        if bad:
+            msg = _tr("Reviewer mark must be set, because there is "
+                      "a reviewing team in this fight")
+            raise exceptions.ValidationError({"reviewer_mark": msg})
 
-        if "reviewer_mark" not in exclude:
-            bad = (self.reviewer_mark is None and
-                   self.fight_stage.fight.team3 is not None)
-            if bad:
-                msg = _tr("Reviewer mark must be set, because there is "
-                          "a reviewing team in this fight")
-                raise exceptions.ValidationError({"reviewer_mark": msg})
-
-        if "juror" not in exclude:
-            jury_set = set(self.fight_stage.fight.jury.all())
-            if self.juror not in jury_set:
-                msg = _tr("Selected juror doesn't take part in the fight")
-                raise exceptions.ValidationError({"juror": msg})
+        # clean jury
+        jury_set = set(self.fight_stage.fight.jury.all())
+        if self.juror not in jury_set:
+            msg = _tr("Selected juror doesn't take part in the fight")
+            raise exceptions.ValidationError({"juror": msg})
 
     class Meta:
         unique_together = ("fight_stage", "juror")
