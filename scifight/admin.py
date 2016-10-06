@@ -79,6 +79,9 @@ class TeamAdmin(tournament_specific.ModelAdmin):
     list_display  = ['name', 'origin', ]
     inlines       = [LeaderInline, ParticipantInline]
 
+    class Media:
+        js = ["scifight/autopopulate.js"]
+
 
 @admin.register(models.Problem)
 class ProblemAdmin(tournament_specific.ModelAdmin):
@@ -162,6 +165,9 @@ class ParticipantAdmin(tournament_specific.ModelAdmin):
 
     _team_name.admin_order_field = 'team__name'
 
+    class Media:
+        js = ["scifight/autopopulate.js"]
+
 
 @admin.register(models.Leader)
 class LeaderAdmin(tournament_specific.ModelAdmin):
@@ -175,6 +181,9 @@ class LeaderAdmin(tournament_specific.ModelAdmin):
 
     _team_name.admin_order_field = 'team__name'
 
+    class Media:
+        js = ["scifight/autopopulate.js"]
+
 
 @admin.register(models.Juror)
 class JurorAdmin(tournament_specific.ModelAdmin):
@@ -187,6 +196,9 @@ class JurorAdmin(tournament_specific.ModelAdmin):
         return model.origin.name if model.origin else ""
 
     _origin_name.admin_order_field = 'origin__name'
+
+    class Media:
+        js = ["scifight/autopopulate.js"]
 
 
 @admin.register(models.Tournament)
@@ -221,6 +233,7 @@ class RoomAdmin(tournament_specific.ModelAdmin):
     pass
 
 # ---
+
 
 class UserInline(admin.StackedInline):
     model = models.UserProfile
