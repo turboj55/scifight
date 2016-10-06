@@ -126,8 +126,8 @@ class Participant(models.Model):
     tournament    = models.ForeignKey(Tournament)
     identity      = models.ForeignKey(PersonIdentity,
                                       related_name="participants")
-    short_name    = models.CharField(max_length=NAME_LENGTH)
     full_name     = models.CharField(max_length=NAME_LENGTH)
+    short_name    = models.CharField(max_length=NAME_LENGTH)
     origin        = models.ForeignKey(PersonOrigin, null=True, blank=True)
     grade         = models.CharField(max_length=GRADE_LENGTH, blank=True)
     team          = models.ForeignKey(Team)
@@ -143,8 +143,8 @@ class Participant(models.Model):
 class Leader(models.Model):
     tournament    = models.ForeignKey(Tournament)
     identity      = models.ForeignKey(PersonIdentity, related_name="leaders")
-    short_name    = models.CharField(max_length=NAME_LENGTH)
     full_name     = models.CharField(max_length=NAME_LENGTH)
+    short_name    = models.CharField(max_length=NAME_LENGTH)
     origin        = models.ForeignKey(PersonOrigin, null=True, blank=True)
     team          = models.ForeignKey(Team)
 
@@ -158,8 +158,8 @@ class Leader(models.Model):
 class Juror(models.Model):
     tournament    = models.ForeignKey(Tournament)
     identity      = models.ForeignKey(PersonIdentity, related_name="jury")
-    short_name    = models.CharField(max_length=NAME_LENGTH)
     full_name     = models.CharField(max_length=NAME_LENGTH)
+    short_name    = models.CharField(max_length=NAME_LENGTH)
     origin        = models.ForeignKey(PersonOrigin, null=True, blank=True)
 
     def __str__(self):
