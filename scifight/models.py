@@ -30,7 +30,7 @@ class TeamIdentity(models.Model):
         # For people to be able to guess where *exactly* they may have seen
         # this team before, show it's latest known name and tournament it
         # participated in.
-        latest_team = self.teams.order_by("-tournament__closing_date").first()
+        latest_team = self.teams.order_by("-tournament__opening_date").first()
         if latest_team:
             return _tr("TID#{0}: «{1}» on {2}").format(self.pk,
                                              latest_team.name,
@@ -45,7 +45,7 @@ class PersonIdentity(models.Model):
 
         # Shorthand function. Will return 'None' if nothing is found.
         def get_most_recent(objs: models.manager.Manager):
-            return objs.order_by("-tournament__closing_date").first()
+            return objs.order_by("-tournament__opening_date").first()
 
         latest_juror       = get_most_recent(self.jury)
         latest_leader      = get_most_recent(self.leaders)
@@ -73,6 +73,9 @@ class TeamOrigin(models.Model):
         verbose_name        = _tr("Team origin")
         verbose_name_plural = _tr("Team origins")
 
+    class Meta:
+        ordering = ['place_name']
+
 
 class PersonOrigin(models.Model):
     place_name    = models.CharField(max_length=NAME_LENGTH)
@@ -80,25 +83,29 @@ class PersonOrigin(models.Model):
     def __str__(self):
         return self.place_name
 
+    class Meta:
+        ordering  = ['place_name']
+
 
 class Tournament(models.Model):
-    full_name     = models.CharField(max_length=NAME_LENGTH)
-    short_name    = models.CharField(max_length=NAME_LENGTH)
+    full_name     = models.CharField(max_length=NAME_LENGTH, unique=True)
+    short_name    = models.CharField(max_length=NAME_LENGTH, unique=True)
     slug          = models.SlugField(max_length=SLUG_LENGTH, unique=True)
-    description   = models.TextField(blank=True, null=True)
-    opening_date  = models.DateField(default=timezone.now)
+    description   = models.TextField(blank=True)
+    opening_date  = models.DateField()
     closing_date  = models.DateField(blank=True, null=True)
 
     def __str__(self):
         return self.short_name
 
+    class Meta:
+        ordering  = ['opening_date']
+
 
 class Team(models.Model):
     tournament    = models.ForeignKey(Tournament)
-    identity      = models.ForeignKey(TeamIdentity,
-                                      related_name="teams",
-                                      null=True,
-                                      blank=True)
+    identity      = models.ForeignKey(TeamIdentity, related_name="teams",
+                                      null=True, blank=True)
     name          = models.CharField(max_length=NAME_LENGTH)
     slug          = models.SlugField(max_length=SLUG_LENGTH,
                                      null=True, blank=True)
@@ -127,6 +134,7 @@ class Team(models.Model):
         return self.name
 
     class Meta:
+        ordering        = ['tournament', 'name']
         unique_together = ('tournament', 'slug')
 
 
@@ -157,6 +165,10 @@ class Participant(models.Model):
     def __str__(self):
         return self.short_name
 
+    class Meta:
+        ordering        = ['tournament', 'full_name']
+        unique_together = ('tournament', 'identity')
+
 
 class Leader(models.Model):
     tournament    = models.ForeignKey(Tournament)
@@ -182,6 +194,10 @@ class Leader(models.Model):
     def __str__(self):
         return self.short_name
 
+    class Meta:
+        ordering        = ['tournament', 'full_name']
+        unique_together = ('tournament', 'identity')
+
 
 class Juror(models.Model):
     tournament    = models.ForeignKey(Tournament)
@@ -203,36 +219,51 @@ class Juror(models.Model):
     def __str__(self):
         return self.short_name
 
+    class Meta:
+        ordering        = ['tournament', 'full_name']
+        unique_together = ('tournament', 'identity')
+
 
 class Room(models.Model):
     tournament    = models.ForeignKey(Tournament)
     designation   = models.CharField(max_length=NAME_LENGTH)
+    sorting_key   = models.FloatField(null=True, blank=True)
+    slug          = models.SlugField(max_length=SLUG_LENGTH)
 
     def __str__(self):
         return self.designation
 
+    class Meta:
+        ordering        = ['sorting_key']
+        unique_together = ('tournament', 'slug')
+
 
 class Problem(models.Model):
     tournament    = models.ForeignKey(Tournament)
-    problem_num   = models.IntegerField(primary_key=True)
+    problem_num   = models.IntegerField(db_index=True)
     title         = models.CharField(max_length=NAME_LENGTH)
     description   = models.TextField(max_length=TEXT_LENGTH, blank=True)
 
     def __str__(self):
         return _tr("#{0}. {1}").format(self.problem_num, self.title)
 
+    class Meta:
+        ordering        = ['tournament', 'problem_num']
+        unique_together = ('tournament', 'problem_num')
+
 
 class TournamentRound(models.Model):
     tournament    = models.ForeignKey(Tournament)
-    ordinal_num   = models.SmallIntegerField()
+    round_num     = models.SmallIntegerField()
     opening_time  = models.DateTimeField()
     closing_time  = models.DateTimeField()
 
     def __str__(self):
-        return str(self.ordinal_num)
+        return str(self.round_num)
 
     class Meta:
-        ordering = ["ordinal_num"]
+        ordering        = ['round_num']
+        unique_together = ('tournament', 'round_num')
 
 
 class Fight(models.Model):
@@ -294,13 +325,13 @@ class Fight(models.Model):
         return _tr("{0} at {1}").format(self.round, self.room)
 
     class Meta:
+        ordering        = ["round", "room"]
         unique_together = ("room", "round")
-        ordering  = ["round", "room"]
 
 
 class FightStage(models.Model):
     fight         = models.ForeignKey(Fight)
-    action_num    = models.IntegerField()
+    stage_num     = models.IntegerField()
     problem       = models.ForeignKey(Problem)
     reporter      = models.ForeignKey(Participant, related_name="+")
     opponent      = models.ForeignKey(Participant, related_name="+")
@@ -317,10 +348,11 @@ class FightStage(models.Model):
 
     def __str__(self):
         return 'Fight #{0}, stage #{1} at {2}'.format(
-            self.fight.round, self.action_num, self.fight.room.designation)
+            self.fight.round, self.stage_num, self.fight.room)
 
     class Meta:
-        unique_together = ("fight", "action_num")
+        ordering        = ['fight', 'stage_num']
+        unique_together = ("fight", "stage_num")
 
 
 class Refusal(models.Model):
@@ -329,6 +361,7 @@ class Refusal(models.Model):
     problem       = models.ForeignKey(Problem)
 
     class Meta:
+        ordering        = ['fight_stage', 'problem']
         unique_together = ("fight_stage", "problem")
 
 
@@ -358,6 +391,7 @@ class JurorPoints(models.Model):
             raise exceptions.ValidationError({"juror": msg})
 
     class Meta:
+        ordering        = ['fight_stage', 'juror']
         unique_together = ("fight_stage", "juror")
 
 # ---

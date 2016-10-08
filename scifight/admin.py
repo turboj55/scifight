@@ -96,8 +96,7 @@ class ProblemAdmin(tournament_specific.ModelAdmin):
 
 @admin.register(models.TournamentRound)
 class TournamentRoundAdmin(tournament_specific.ModelAdmin):
-    ordering      = ["ordinal_num"]
-    list_display  = ["ordinal_num", "opening_time", "closing_time"]
+    list_display  = ["round_num", "opening_time", "closing_time"]
 
 
 @admin.register(models.Fight)
@@ -119,33 +118,12 @@ class FightAdmin(tournament_specific.ModelAdmin):
 @admin.register(models.FightStage)
 class FightStageAdmin(tournament_specific.ModelAdmin):
     inlines       = [RefusalInline, JurorPointsInline]
-    ordering      = ["fight__round", "fight__room", "action_num"]
-    list_display  = ["fight", "_fight_room", "_action_num",
-                     "_team1", "_team2", "_team3"]
+    list_display  = ["fight", "stage_num"]
     list_select_related = ["fight"]
 
     tournament_alias_field     = "fight__tournament"
     foreignkey_filtered_fields = ["problem", "fight",
                                   "reporter", "opponent", "reviewer"]
-
-    # Instead of having this method here it's possible to just
-    # write "action_num" in 'list_display' parameter. But please
-    # don't do that, or you would immediately get ugly arrow
-    # buttons for interactive sorting. I don't like them here.
-    def _action_num(self, model):
-        return model.action_num
-
-    def _fight_room(self, model):
-        return model.fight.room
-
-    def _team1(self, model):
-        return model.fight.team1
-
-    def _team2(self, model):
-        return model.fight.team2
-
-    def _team3(self, model):
-        return model.fight.team3
 
 
 @admin.register(models.TeamOrigin)
@@ -156,7 +134,6 @@ class TeamOriginAdmin(admin.ModelAdmin):
 @admin.register(models.Participant)
 class ParticipantAdmin(tournament_specific.ModelAdmin):
     form          = PersonForm
-    ordering      = ['full_name']
     list_display  = ['full_name', '_team_name', 'grade', 'is_captain']
     list_select_related = ['team']
     foreignkey_filtered_fields = ["team"]
@@ -173,15 +150,9 @@ class ParticipantAdmin(tournament_specific.ModelAdmin):
 @admin.register(models.Leader)
 class LeaderAdmin(tournament_specific.ModelAdmin):
     form          = PersonForm
-    ordering      = ['full_name']
-    list_display  = ['full_name', '_team_name', 'origin']
+    list_display  = ['full_name', 'team', 'origin']
     list_select_related = ['team']
     foreignkey_filtered_fields = ["team"]
-
-    def _team_name(self, model):
-        return model.team.name
-
-    _team_name.admin_order_field = 'team__name'
 
     class Media:
         js = ["scifight/autopopulate.js"]
@@ -191,14 +162,9 @@ class LeaderAdmin(tournament_specific.ModelAdmin):
 class JurorAdmin(tournament_specific.ModelAdmin):
     form          = PersonForm
     ordering      = ['full_name']
-    list_display  = ['full_name', 'short_name', '_origin_name', 'tournament']
+    list_display  = ['full_name', 'short_name', 'origin', 'tournament']
     list_display_links = ['full_name', 'short_name', 'tournament']
     list_select_related = ['origin']
-
-    def _origin_name(self, model):
-        return model.origin.name if model.origin else ""
-
-    _origin_name.admin_order_field = 'origin__name'
 
     class Media:
         js = ["scifight/autopopulate.js"]
