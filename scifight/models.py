@@ -96,7 +96,9 @@ class Tournament(models.Model):
 class Team(models.Model):
     tournament    = models.ForeignKey(Tournament)
     identity      = models.ForeignKey(TeamIdentity,
-                                      related_name="teams", blank=True)
+                                      related_name="teams",
+                                      null=True,
+                                      blank=True)
     name          = models.CharField(max_length=NAME_LENGTH)
     slug          = models.SlugField(max_length=SLUG_LENGTH,
                                      null=True, blank=True)
@@ -112,6 +114,15 @@ class Team(models.Model):
         if self.slug == "":
             self.slug = None
 
+    def save(self, *args, **kwargs):
+        if self.identity is None:
+            new_identity = TeamIdentity()
+            new_identity.save()
+
+            self.identity = new_identity
+
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -122,7 +133,8 @@ class Team(models.Model):
 class Participant(models.Model):
     tournament    = models.ForeignKey(Tournament)
     identity      = models.ForeignKey(PersonIdentity,
-                                      related_name="participants")
+                                      related_name="participants",
+                                      null=True, blank=True)
     full_name     = models.CharField(max_length=NAME_LENGTH)
     short_name    = models.CharField(max_length=NAME_LENGTH)
     origin        = models.ForeignKey(PersonOrigin, null=True, blank=True)
@@ -133,13 +145,23 @@ class Participant(models.Model):
     def fill_tournament(self):
         self.tournament = self.team.tournament
 
+    def save(self, *args, **kwargs):
+        if self.identity is None:
+            new_identity = PersonIdentity()
+            new_identity.save()
+
+            self.identity = new_identity
+
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.short_name
 
 
 class Leader(models.Model):
     tournament    = models.ForeignKey(Tournament)
-    identity      = models.ForeignKey(PersonIdentity, related_name="leaders")
+    identity      = models.ForeignKey(PersonIdentity, related_name="leaders",
+                                      null=True, blank=True)
     full_name     = models.CharField(max_length=NAME_LENGTH)
     short_name    = models.CharField(max_length=NAME_LENGTH)
     origin        = models.ForeignKey(PersonOrigin, null=True, blank=True)
@@ -148,16 +170,35 @@ class Leader(models.Model):
     def fill_tournament(self):
         self.tournament = self.team.tournament
 
+    def save(self, *args, **kwargs):
+        if self.identity is None:
+            new_identity = PersonIdentity()
+            new_identity.save()
+
+            self.identity = new_identity
+
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.short_name
 
 
 class Juror(models.Model):
     tournament    = models.ForeignKey(Tournament)
-    identity      = models.ForeignKey(PersonIdentity, related_name="jury")
+    identity      = models.ForeignKey(PersonIdentity, related_name="jury",
+                                      null=True, blank=True)
     full_name     = models.CharField(max_length=NAME_LENGTH)
     short_name    = models.CharField(max_length=NAME_LENGTH)
     origin        = models.ForeignKey(PersonOrigin, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.identity is None:
+            new_identity = PersonIdentity()
+            new_identity.save()
+
+            self.identity = new_identity
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.short_name

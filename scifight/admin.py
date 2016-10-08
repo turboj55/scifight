@@ -12,7 +12,8 @@ admin.AdminSite.site_header = 'SciFight'
 class PersonForm(forms.ModelForm):
     identity = forms.ModelChoiceField(
         queryset    = models.PersonIdentity.objects.all(),
-        empty_label = _tr("--- Create new ---"))
+        empty_label = _tr("--- Create new ---"),
+        required    = False)
 
     class Meta:
         exclude = []
@@ -21,7 +22,8 @@ class PersonForm(forms.ModelForm):
 class TeamForm(forms.ModelForm):
     identity = forms.ModelChoiceField(
         queryset    = models.TeamIdentity.objects.all(),
-        empty_label = _tr("--- Create new ---"))
+        empty_label = _tr("--- Create new ---"),
+        required    = False)
 
     class Meta:
         exclude = []
