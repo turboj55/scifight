@@ -1,7 +1,7 @@
-{% extends 'scifight/base.html' %}
+{% extends 'scifight/_inside_tournament.html' %}
 {% load scifight_url %}
 
-{% block content %}
+{% block container_content %}
     {% for fight in fights %}
         <p><a href="{{ fight | scifight_url }}">Fight#{{ fight.fight_num }}</a></p>
         <a href="{{ fight.room | scifight_url }}"><p>room {{ fight.room }}</p><a

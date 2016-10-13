@@ -1,7 +1,7 @@
-{% extends 'scifight/base.html' %}
+{% extends 'scifight/_inside_tournament.html' %}
 {% load scifight_url %}
 
-{% block content %}
+{% block container_content %}
     <p>{{ leader.full_name }}, ({{ leader.short_name }})</p>
     <p><a href="{{ leader.team | scifight_url }}">Team: {{ leader.team.name }}</a></p>
     <p>{{ leader.origin }}</p>

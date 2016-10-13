@@ -1,7 +1,7 @@
-{% extends 'scifight/base.html' %}
+{% extends 'scifight/_inside_tournament.html' %}
 {% load scifight_url %}
 
-{% block content %}
+{% block container_content %}
     <h1>{{ participant.full_name }}</h1>
     <p>{{ participant.origin }}</p>
     <p><a href="{{ participant.team | scifight_url }}">Team: {{ participant.team.name }}</a></p>

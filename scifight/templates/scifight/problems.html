@@ -1,7 +1,7 @@
-{% extends 'scifight/base.html' %}
+{% extends 'scifight/_inside_tournament.html' %}
 {% load scifight_url %}
 
-{% block content %}
+{% block container_content %}
     {% for problem in problems %}
         <h1><a href="{{ problem | scifight_url }}">{{ problem.title }}</a></h1>
         <p>{{ problem.description }}</p>
