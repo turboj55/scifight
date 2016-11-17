@@ -1,9 +1,15 @@
 {% extends 'scifight/_inside_tournament.html' %}
+{% load i18n %}
 {% load scifight_url %}
 
 {% block container_content %}
+    <h1>{% trans "All registered teams" %}</h1>
+
+    <p>
+    <ul>
     {% for team in teams %}
-        <p><a href="{{ team | scifight_url }}">Team - {{ team.name }}</a></p>
-        <hr/>
+        <li><a href="{{ team | scifight_url }}">{{ team.name }}</a></li>
     {% endfor %}
+    </ul>
+    </p>
 {% endblock %}
