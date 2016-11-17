@@ -124,11 +124,3 @@ ADMIN_REORDER = ('sites',
          models=[
              'auth.User',
              'auth.Group']))
-
-# === Override default settings with local-specific ones ===
-
-from .settings_secret import *
-
-# These lines are here just to suppress PyCharm's "unused import" warning.
-assert SECRET_KEY
-assert DATABASES
