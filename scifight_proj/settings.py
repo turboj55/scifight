@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'scifight_proj',
     'scifight',
     'admin_reorder',
+    'django_extensions',
 ]
 
 MIDDLEWARE_CLASSES = [
