@@ -1,7 +1,7 @@
-{% extends 'scifight/base.html' %}
+{% extends 'scifight/_inside_tournament.html' %}
 {% load scifight_url %}
 
-{% block content %}
+{% block container_content %}
     {% for juror in jury %}
         <p><a href="{{ juror | scifight_url }}">{{ juror.full_name }} ({{ juror.short_name }})</a></p>
         <p>{{ juror.origin }}</p>

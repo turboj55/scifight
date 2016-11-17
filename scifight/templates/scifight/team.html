@@ -1,24 +1,31 @@
-{% extends 'scifight/base.html' %}
+{% extends 'scifight/_inside_tournament.html' %}
+{% load i18n %}
 {% load scifight_url %}
 
-{% block content %}
-    <h1>{{ team.name }} team</h1>
+{% block container_content %}
+    <h1>{{ team.name }} <span class="label label-info">{% trans "Team" %}</span></h1>
+    <p><span class="glyphicon glyphicon-home"></span>
+        {{ team.origin }}
+    </p>
+
     <p>{{ team.description }}</p>
-    <p>{{ team.origin }}</p>
-    <p>Liders:</p>
-    {% for leader in leaders %}
-        <p>{{ leader.full_name }}</p>
-    {% endfor %}
+
+    <h2>Leaders</h2>
     <ul>
-        {% for participant in participants %}
-            <li>
-                <a href="{{ participant | scifight_url }}">
-                    {% if participant.full_name %}{{ participant.full_name }}
-                    {% else %} {{ participant.short_name }}
-                    {% endif %}
-                </a>
+    {% for leader in team.leader_set.all %}
+        <li><a href="{{ leader | scifight_url }}">
+            {{ leader.full_name }}</a></li>
+    {% endfor %}
+    </ul>
+
+
+    <h2>Players</h2>
+    <ul>
+        {% for participant in team.participant_set.all %}
+            <li><a href="{{ participant | scifight_url }}">
+                    {{ participant.full_name }}</a>
                 {% if participant.is_captain %}
-                    <- captain
+                    {% trans "(captain)" %}
                 {% endif %}
             </li>
         {% endfor %}

@@ -1,7 +1,7 @@
-{% extends 'scifight/base.html' %}
+{% extends 'scifight/_inside_tournament.html' %}
 {% load scifight_url %}
 
-{% block content %}
+{% block container_content %}
     {% for participant in participants %}
         <p>
             <a href="{{ participant | scifight_url }}">

@@ -1,0 +1,69 @@
+{% extends "scifight/_base.html" %}
+{% load i18n %}
+{% load scifight_url %}
+
+{% block content %}
+    {#  #}
+    {% url "scifight:schedule"     tournament.slug as schedule_url %}
+    {% url "scifight:rooms"        tournament.slug as rooms_url %}
+    {% url "scifight:teams"        tournament.slug as teams_url %}
+    {% url "scifight:participants" tournament.slug as participants_url %}
+    {% url "scifight:leaders"      tournament.slug as leaders_url %}
+    {% url "scifight:jury"         tournament.slug as jury_url %}
+    {% url "scifight:problems"     tournament.slug as problems_url %}
+
+    <nav class="navbar navbar-default navbar-static-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button"
+                    class="navbar-toggle collapsed"
+                    data-toggle="collapse"
+                    data-target="#navbar"
+                    aria-expanded="false"
+                    aria-controls="navbar">
+                <span class="sr-only">{% trans "Toggle navigation" %}</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+          <a class="navbar-brand"
+             href="{{ tournament | scifight_url }}">{{ tournament.short_name }}
+          </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                {% block navitems %}
+                {% with nav_active_item as nai %}
+                    <li {% if nai == "schedule" %} class="active" {% endif %}>
+                        <a href="{{ schedule_url }}">
+                        {% trans "Schedule" %}</a></li>
+                    <li {% if nai == "rooms" %} class="active" {% endif %}>
+                        <a href="{{ rooms_url }}">
+                        {% trans "Rooms" %}</a></li>
+                    <li {% if nai == "teams" %} class="active" {% endif %}>
+                        <a href="{{ teams_url }}">
+                        {% trans "Teams" %}</a></li>
+                    <li {% if nai == "participants" %} class="active" {% endif %}>
+                        <a href="{{ participants_url }}">
+                        {% trans "Participants" %}</a></li>
+                    <li {% if nai == "leaders" %} class="active" {% endif %}>
+                        <a href="{{ leaders_url }}">
+                        {% trans "Leaders" %}</a></li>
+                    <li {% if nai == "jury" %} class="active" {% endif %}>
+                        <a href="{{ jury_url }}">{% trans "Jury" %}</a></li>
+                    <li {% if nai == "problems" %} class="active" {% endif %}>
+                        <a href="{{ problems_url }}">
+                        {% trans "Problems" %}</a></li>
+                {% endwith %}
+                {% endblock %}
+            </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+        {%  block container_content %}
+        {% endblock %}
+    </div>
+
+{% endblock %}

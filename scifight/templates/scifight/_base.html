@@ -1,0 +1,46 @@
+{% load i18n %}
+{% load staticfiles %}
+{% load scifight_url %}
+
+<!DOCTYPE html>
+<html lang="{{ site.language }}">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 3 meta tags *must* come first in the head; any other head
+         content must come *after* these tags. -->
+
+    {% block title %}
+        <title>{{ site.short_name }} </title>
+    {% endblock %}
+
+    <link href="{% static 'scifight/css/bootstrap.min.css' %}"
+          rel="stylesheet">
+    <link href="{% static 'scifight/css/navbar-static-top.css' %}"
+          rel="stylesheet">
+    <!-- <link href="{% static 'scifight/css/sticky-footer-navbar.css' %}"
+          rel="stylesheet"> -->
+</head>
+
+<body>
+
+{% block content %}
+{% endblock %}
+
+<footer class="footer">
+    <div class="container">
+        {% block footer %}
+        {% endblock %}
+    </div>
+</footer>
+
+<!-- JavaScript placed at the end of the document so the pages load faster -->
+<script src="{% static 'scifight/js/jquery.min.js' %}"></script>
+<script src="{% static 'scifight/js/bootstrap.min.js' %}"></script>
+
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="{% static 'scifight/js/ie10-viewport-bug-workaround.js' %}"/>
+</body>
+</html>
