@@ -1,10 +1,31 @@
 {% extends 'scifight/_inside_tournament.html' %}
+{% load i18n %}
 {% load scifight_url %}
 
 {% block container_content %}
-    {% for leader in leaders %}
-        <p><a href="{{ leader | scifight_url }}">{{ leader.full_name }} ({{ leader.short_name }})</a></p>
-        <p><a href="{{ leader.team | scifight_url }}">Team: {{ leader.team }}</a></p>
-        <hr/>
-    {% endfor %}
+    <h1>{% trans "Team leaders" %}</h1>
+    <br/>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>{% trans "No." %}</th>
+            <th>{% trans "Full name" %}</th>
+            <th class="hidden-xs">{% trans "Team" %}</th>
+            <th class="hidden-xs hidden-sm">{% trans "Location" %}</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for leader in leaders %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td><a href="{{ leader | scifight_url }}">
+                {{ leader.full_name }}</a></td>
+            <td class="hidden-xs"><a href="{{ leader.team | scifight_url }}">
+                {{ leader.team }}</a></td>
+            <td class="hidden-xs hidden-sm">{{ leader.origin | default:'' }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

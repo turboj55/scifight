@@ -3,13 +3,29 @@
 {% load scifight_url %}
 
 {% block container_content %}
-    <h1>{% trans "All registered teams" %}</h1>
+    <h1>{% trans "Current team rating" %}</h1>
 
-    <p>
-    <ul>
-    {% for team in teams %}
-        <li><a href="{{ team | scifight_url }}">{{ team.name }}</a></li>
-    {% endfor %}
-    </ul>
-    </p>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>{% trans "Rank" %}</th>
+            <th>{% trans "Points" %}</th>
+            <th>{% trans "Team name" %}</th>
+            <th class="hidden-xs">{% trans "Location" %}</th>
+            <th class="hidden-xs">{% trans "Participants" %}</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for team in teams %}
+        <tr>
+          <th scope="row">{{ forloop.counter }}</th>
+          <td>{{ 0.0 | floatformat:2 }}</td>
+          <td><a href="{{ team | scifight_url }}">{{ team.name }}</a></td>
+          <td class="hidden-xs">{{ team.origin }}</td>
+          <td class="hidden-xs">{{ team.leaders.count }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
